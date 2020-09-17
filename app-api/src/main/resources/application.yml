@@ -1,0 +1,32 @@
+spring:
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+
+  datasource:
+    url: jdbc:mysql://minnan.site:3306/bookkeeping?serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  redis:
+    host: minnan.site
+    port: 6379
+    database: 5
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8900
+
+jwt:
+  route:
+    authentication:
+      path: /login
+  header: Authorization
+  expiration: 604800
+  scret: min107
+
+aliyun:
+  bucketName: link-server
+  baseUrl: http://minnan.site:2000

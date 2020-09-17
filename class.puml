@@ -1,0 +1,106 @@
+@startuml
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+Object[] elementData
+size()
+}
+
+enum TimeUnit {
+DAYS
+HOURS
+MINUTES
+}
+
+@enduml
+
+@startuml
+package auth{
+    class User{
+    Integer id
+    String username
+    String password
+    }
+}
+
+package ledger{
+    class Ledger{
+    Integer id
+    Integer userId
+    String ledgerName
+    List<ExpenseType> expenseTypeList
+    List<IncomeType> incomeTypeList
+    void addWarehouse()
+    }
+
+    abstract class Warehouse{
+    Integer id
+    String warehouseName
+    Double balance
+    Integer ledgerId
+    void addJournal(Journal)
+    }
+
+    class Currency{
+    Integer id
+    String code
+    String name
+    }
+
+    abstract class Journal{
+    Integer id
+    Integer warehouseId
+    Double amount
+    Timestamp createTime
+    }
+
+    class Expense{
+    ExpenseType type
+    }
+
+    class Income{
+    IncomeType type
+    }
+
+    class ExpenseType{
+    Integer id
+    String name
+    }
+
+    class IncomeType{
+    Integer id
+    String name
+    }
+
+    class InvestmentWarehouse
+    class VaultWarehouse
+
+    Warehouse <|-- InvestmentWarehouse
+    Warehouse <|-- VaultWarehouse
+    Ledger <-- Warehouse
+    Warehouse <-- Currency
+    Warehouse *-- Journal
+    Journal <|-- Expense
+    Journal <|-- Income
+    Ledger *-- ExpenseType
+    Ledger *-- IncomeType
+    ExpenseType *-- ExpenseType
+    IncomeType *-- IncomeType
+    Expense <-- ExpenseType
+    Income <-- IncomeType
+
+}
+
+User <-- Ledger
+@enduml
