@@ -1,4 +1,4 @@
-package site.minnan.bookkeeping.config;
+package site.minnan.bookkeeping.infrastructure.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

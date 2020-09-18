@@ -11,10 +11,11 @@ spring:
   redis:
     host: minnan.site
     port: 6379
-    database: 5
+    database: 6
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: true
 
 server:
   port: 8900

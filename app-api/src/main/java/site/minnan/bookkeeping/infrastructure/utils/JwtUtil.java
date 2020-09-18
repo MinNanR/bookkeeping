@@ -1,4 +1,4 @@
-package site.minnan.bookkeeping.utils;
+package site.minnan.bookkeeping.infrastructure.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,7 +14,6 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-
     public static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60;
 
     @Value("${jwt.secret}")
@@ -60,5 +59,4 @@ public class JwtUtil {
         String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
 }

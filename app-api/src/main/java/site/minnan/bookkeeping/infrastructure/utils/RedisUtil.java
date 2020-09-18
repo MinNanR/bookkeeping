@@ -1,4 +1,4 @@
-package site.minnan.bookkeeping.utils;
+package site.minnan.bookkeeping.infrastructure.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 @Component
 public class RedisUtil {
+
     @Autowired
     RedisTemplate redisTemplate;
 
@@ -209,5 +210,4 @@ public class RedisUtil {
     public long getTTL(String key, TimeUnit timeUnit){
         return redisTemplate.getExpire(key, timeUnit);
     }
-
 }

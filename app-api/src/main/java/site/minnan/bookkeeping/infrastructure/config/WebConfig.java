@@ -1,4 +1,4 @@
-package site.minnan.bookkeeping.config;
+package site.minnan.bookkeeping.infrastructure.config;
 
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
