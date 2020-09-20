@@ -1,15 +1,19 @@
 package site.minnan.bookkeeping.application.service.impl;
 
-import cn.hutool.core.lang.Console;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.application.service.UserService;
-import site.minnan.bookkeeping.domain.ValueObject.auth.JwtUser;
+import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.domain.aggreates.CustomUser;
 import site.minnan.bookkeeping.domain.repository.UserRepository;
+import site.minnan.bookkeeping.domain.vo.auth.UserInformationVO;
+import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
+import sun.plugin.liveconnect.SecurityContextHelper;
 
 import java.time.Duration;
 
@@ -21,6 +25,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -46,8 +53,7 @@ public class UserServiceImpl implements UserService {
         return 1;
     }
 
-    @Override
-    public CustomUser getUserByUsername(String username) {
+    private CustomUser getUserByUsername(String username) {
         CustomUser userInformation = (CustomUser) redisUtil.getValue("user:" + username);
         if (userInformation != null) {
             return userInformation;
@@ -57,5 +63,12 @@ public class UserServiceImpl implements UserService {
             redisUtil.valueSet("user:" + username, customUserInDB, Duration.ofDays(7));
         }
         return customUserInDB;
+    }
+
+    @Override
+    public UserInformationVO getUserInformation() {
+        JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String token = jwtUtil.generateToken(user);
+        return new UserInformationVO(token);
     }
 }

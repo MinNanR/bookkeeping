@@ -1,4 +1,4 @@
-package site.minnan.bookkeeping.domain.ValueObject.auth;
+package site.minnan.bookkeeping.domain.vo.auth;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
