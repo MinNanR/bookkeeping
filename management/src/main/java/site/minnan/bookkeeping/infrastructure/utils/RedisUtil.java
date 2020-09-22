@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 public class RedisUtil {
 
     @Autowired
-    RedisTemplate redisTemplate;
+    private RedisTemplate redisTemplate;
 
     /**
      * 模糊查询redis数据库

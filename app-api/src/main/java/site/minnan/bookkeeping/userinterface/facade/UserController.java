@@ -6,12 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import site.minnan.bookkeeping.application.service.UserService;
 import site.minnan.bookkeeping.domain.vo.auth.UserInformationVO;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateType;
@@ -20,6 +15,7 @@ import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 @Slf4j
 @RestController
+@RequestMapping("app/auth")
 public class UserController {
 
     @Autowired
@@ -29,8 +25,8 @@ public class UserController {
     private UserService userService;
 
     @OperateType("登录")
-    @PostMapping("")
-    public ResponseEntity login(@RequestBody LoginDTO dto) throws Exception {
+    @PostMapping("login")
+    public ResponseEntity<UserInformationVO> createAuthenticationToken(@RequestBody LoginDTO dto) throws Exception {
         log.info("用户登录，登录信息：{}", dto.toString());
         try {
             manager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
@@ -39,7 +35,7 @@ public class UserController {
         } catch (BadCredentialsException e){
             throw new Exception(("用户名或密码错误"));
         }
-        UserInformationVO vo = userService.getUserInformation();
+        UserInformationVO vo = userService.getUserInformationByUsername(dto.getUsername());
         return ResponseEntity.success(vo);
     }
 }

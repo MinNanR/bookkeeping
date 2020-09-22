@@ -18,7 +18,8 @@ public interface UserService extends UserDetailsService {
      * 获取用户信息
      *
      * @param
+     * @param username
      * @return
      */
-    UserInformationVO getUserInformation();
+    UserInformationVO getUserInformationByUsername(String username);
 }

@@ -18,12 +18,12 @@ spring:
     show-sql: true
 
 server:
-  port: 8900
+  port: 8901
 
 jwt:
   route:
     authentication:
-      path: /app/auth/login
+      path: /management/auth/login
   header: Authorization
   expiration: 604800
   scret: min107
@@ -31,3 +31,4 @@ jwt:
 aliyun:
   bucketName: link-server
   baseUrl: http://minnan.site:2000
+

@@ -1,17 +1,18 @@
 package site.minnan.bookkeeping.infrastructure.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import site.minnan.bookkeeping.application.service.UserService;
+import site.minnan.bookkeeping.aplication.service.AdministratorService;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 
 import javax.servlet.FilterChain;
@@ -20,7 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Component
+@Slf4j
+@Configuration
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Value("${jwt.header}")
@@ -30,7 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    @Qualifier("CustomUserService")
+    @Qualifier("AdministratorService")
     private UserDetailsService userDetailsService;
 
     /**
@@ -52,9 +54,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                logger.info("Unable to get JWT Token");
+                log.info("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
-                logger.info("JWT token has expired");
+                log.info("JWT token has expired");
             }
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
