@@ -1,6 +1,7 @@
 package site.minnan.bookkeeping.aplication.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 import site.minnan.bookkeeping.userinterface.dto.AddAdministratorDTO;
 import site.minnan.bookkeeping.userinterface.dto.UpdateAdministratorDTO;
+import site.minnan.bookkeeping.userinterface.dto.UpdatePasswordDTO;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -93,10 +95,14 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      */
     @Override
     public void updateAdministrator(UpdateAdministratorDTO dto) throws UserNotExistException {
-        Optional<Administrator> administratorInDB = administratorRepository.findOne((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("id"), dto.getId()));
+        Optional<Administrator> administratorInDB = administratorRepository.findById(dto.getId());
         Administrator administrator = administratorInDB.orElseThrow(UserNotExistException::new);
         administrator.changeInformation(dto.getNickName(), Optional.empty());
         administratorRepository.save(administrator);
+    }
+
+    @Override
+    public void changePassword(UpdatePasswordDTO dto) throws UserNotExistException, BadCredentialsException {
+        administratorService.changePassword(dto.getId(), dto.getOldPassword(), dto.getNewPassword());
     }
 }

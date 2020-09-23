@@ -1,11 +1,13 @@
 package site.minnan.bookkeeping.aplication.service;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import site.minnan.bookkeeping.domain.vo.auth.AdministratorInformationVO;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
 import site.minnan.bookkeeping.userinterface.dto.AddAdministratorDTO;
 import site.minnan.bookkeeping.userinterface.dto.UpdateAdministratorDTO;
+import site.minnan.bookkeeping.userinterface.dto.UpdatePasswordDTO;
 
 public interface AdministratorApplicationService extends UserDetailsService {
 
@@ -22,4 +24,10 @@ public interface AdministratorApplicationService extends UserDetailsService {
      * @param dto
      */
     void updateAdministrator(UpdateAdministratorDTO dto) throws UserNotExistException;
+
+    /**
+     * 修改管理员密码
+     * @param dto
+     */
+    void changePassword(UpdatePasswordDTO dto)throws UserNotExistException, BadCredentialsException;
 }

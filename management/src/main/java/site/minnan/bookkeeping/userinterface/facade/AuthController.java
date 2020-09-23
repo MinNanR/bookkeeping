@@ -19,12 +19,11 @@ import site.minnan.bookkeeping.domain.vo.auth.AdministratorInformationVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
-import site.minnan.bookkeeping.userinterface.dto.AddAdministratorDTO;
-import site.minnan.bookkeeping.userinterface.dto.LoginDTO;
-import site.minnan.bookkeeping.userinterface.dto.OptionalDTO;
-import site.minnan.bookkeeping.userinterface.dto.UpdateAdministratorDTO;
+import site.minnan.bookkeeping.userinterface.dto.*;
 import site.minnan.bookkeeping.userinterface.response.ResponseCode;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -84,11 +83,12 @@ public class AuthController {
 
     /**
      * 更新用户信息
+     *
      * @param dto
      * @return
      */
     @PostMapping("updateAdministrator")
-    public ResponseEntity<?> updateAdministrator(@RequestBody UpdateAdministratorDTO dto){
+    public ResponseEntity<?> updateAdministrator(@RequestBody UpdateAdministratorDTO dto) {
         JwtUser principal = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         dto.setId(principal.getId());
         try {
@@ -96,6 +96,18 @@ public class AuthController {
             return ResponseEntity.success();
         } catch (UserNotExistException e) {
             return ResponseEntity.fail("用户不存在");
+        }
+    }
+
+    @PostMapping("changePassword")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid UpdatePasswordDTO dto) {
+        try {
+            JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            dto.setId(user.getId());
+            administratorApplicationService.changePassword(dto);
+            return ResponseEntity.success();
+        } catch (UserNotExistException | BadCredentialsException e) {
+            return ResponseEntity.fail(e.getMessage());
         }
     }
 }

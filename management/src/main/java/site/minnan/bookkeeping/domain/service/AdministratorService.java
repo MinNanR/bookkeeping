@@ -1,5 +1,7 @@
 package site.minnan.bookkeeping.domain.service;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
 
 public interface AdministratorService {
@@ -11,4 +13,12 @@ public interface AdministratorService {
      * @param nickName 昵称
      */
     void createAdministrator(String username, String password, String nickName) throws UsernameExistException;
+
+    /**
+     * 修改密码
+     * @param administratorId 管理员id
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     */
+    void changePassword(Integer administratorId, String oldPassword, String newPassword) throws UserNotExistException, BadCredentialsException;
 }
