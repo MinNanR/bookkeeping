@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
-import site.minnan.bookkeeping.aplication.service.AdministratorService;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 
 import javax.servlet.FilterChain;
@@ -32,7 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    @Qualifier("AdministratorService")
+    @Qualifier("AdministratorApplicationService")
     private UserDetailsService userDetailsService;
 
     /**

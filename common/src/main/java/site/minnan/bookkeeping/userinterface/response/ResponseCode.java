@@ -2,17 +2,19 @@ package site.minnan.bookkeeping.userinterface.response;
 
 public enum ResponseCode {
 
-    SUCCESS("000", "成功"),
+    SUCCESS("000", "操作成功"),
 
     INVALID_USER("002","非法用户"),
 
     FAIL("001","操作失败"),
 
-    INVALID_PARAM("005", "参数非法");
+    INVALID_PARAM("005", "参数非法"),
 
-    private String code;
+    USERNAME_EXIST("010", "用户名已存在");
 
-    private String message;
+    private final String code;
+
+    private final String message;
 
     ResponseCode(String code, String message) {
         this.code = code;

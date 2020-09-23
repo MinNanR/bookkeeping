@@ -39,4 +39,11 @@ public class ResponseEntity<T> {
         responseEntity.setData(data);
         return responseEntity;
     }
+
+    public static<T> ResponseEntity<T> fail(String message){
+        ResponseEntity<T> responseEntity = new ResponseEntity<>();
+        responseEntity.code = "001";
+        responseEntity.message = message;
+        return responseEntity;
+    }
 }

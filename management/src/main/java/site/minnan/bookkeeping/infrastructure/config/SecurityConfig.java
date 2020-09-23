@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    @Qualifier("AdministratorService")
+    @Qualifier("AdministratorApplicationService")
     private UserDetailsService userService;
 
     @Autowired
