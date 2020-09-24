@@ -4,6 +4,9 @@ import com.google.common.base.Objects;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 
 @Entity
@@ -14,6 +17,7 @@ import java.util.Optional;
 @ToString
 public class Administrator {
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -31,8 +35,11 @@ public class Administrator {
     @Column(name = "role", length = 20, columnDefinition = "comment '角色'")
     private String role;
 
+    @Column(name = "create_time")
+    private Timestamp createTime;
+
     public static Administrator of(String username, String password, String nickName) {
-        return new Administrator(null, username, password, nickName, "ADMIN");
+        return new Administrator(null, username, password, nickName, "ADMIN", Timestamp.from(Instant.now()));
     }
 
     @Override
@@ -48,7 +55,7 @@ public class Administrator {
         return Objects.hashCode(id);
     }
 
-    public void changeInformation(Optional<String> nickName, Optional<String> password){
+    public void changeInformation(Optional<String> nickName, Optional<String> password) {
         nickName.ifPresent(value -> this.nickName = value);
         password.ifPresent(value -> this.password = value);
     }

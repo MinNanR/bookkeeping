@@ -15,15 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.minnan.bookkeeping.aplication.service.AdministratorApplicationService;
-import site.minnan.bookkeeping.domain.vo.auth.AdministratorInformationVO;
-import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
-import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
-import site.minnan.bookkeeping.userinterface.dto.*;
-import site.minnan.bookkeeping.userinterface.response.ResponseCode;
+import site.minnan.bookkeeping.userinterface.dto.out.LoginVO;
+import site.minnan.bookkeeping.userinterface.dto.in.LoginDTO;
+import site.minnan.bookkeeping.userinterface.dto.in.OptionalDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
-
-import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -44,7 +39,7 @@ public class AuthController {
      * @throws Exception
      */
     @PostMapping("login")
-    public ResponseEntity<AdministratorInformationVO> createAuthenticationToken(@RequestBody LoginDTO dto) throws Exception {
+    public ResponseEntity<LoginVO> createAuthenticationToken(@RequestBody LoginDTO dto) throws Exception {
         log.info("用户登录，登录信息：{}", dto.toString());
         try {
             manager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
@@ -53,7 +48,7 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             throw new Exception("用户名或密码错误", e);
         }
-        AdministratorInformationVO vo =
+        LoginVO vo =
                 administratorApplicationService.getAdministratorInformationByUsername(dto.getUsername());
         return ResponseEntity.success(vo);
     }
@@ -66,48 +61,6 @@ public class AuthController {
         return ResponseEntity.success(dto.getNickName().orElse("is null"));
     }
 
-    /**
-     * @param dto
-     * @return
-     */
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @PostMapping("createAdministrator")
-    public ResponseEntity<?> createAdministrator(@RequestBody AddAdministratorDTO dto) {
-        try {
-            administratorApplicationService.createAdministrator(dto);
-            return ResponseEntity.success();
-        } catch (UsernameExistException e) {
-            return ResponseEntity.fail(ResponseCode.USERNAME_EXIST);
-        }
-    }
 
-    /**
-     * 更新用户信息
-     *
-     * @param dto
-     * @return
-     */
-    @PostMapping("updateAdministrator")
-    public ResponseEntity<?> updateAdministrator(@RequestBody UpdateAdministratorDTO dto) {
-        JwtUser principal = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        dto.setId(principal.getId());
-        try {
-            administratorApplicationService.updateAdministrator(dto);
-            return ResponseEntity.success();
-        } catch (UserNotExistException e) {
-            return ResponseEntity.fail("用户不存在");
-        }
-    }
 
-    @PostMapping("changePassword")
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid UpdatePasswordDTO dto) {
-        try {
-            JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            dto.setId(user.getId());
-            administratorApplicationService.changePassword(dto);
-            return ResponseEntity.success();
-        } catch (UserNotExistException | BadCredentialsException e) {
-            return ResponseEntity.fail(e.getMessage());
-        }
-    }
 }

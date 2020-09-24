@@ -1,11 +1,11 @@
-package site.minnan.bookkeeping.domain.vo.auth;
+package site.minnan.bookkeeping.userinterface.dto.out;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AdministratorInformationVO {
+public class LoginVO {
 
     private String jwtToken;
 }

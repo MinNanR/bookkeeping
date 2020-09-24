@@ -16,6 +16,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    database: mysql
 
 server:
   port: 8901

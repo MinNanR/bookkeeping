@@ -1,6 +1,10 @@
 package site.minnan.bookkeeping.aplication.service.impl;
 
+import com.sun.javafx.binding.BidirectionalBinding;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,18 +13,23 @@ import site.minnan.bookkeeping.aplication.service.AdministratorApplicationServic
 import site.minnan.bookkeeping.domain.aggreates.Administrator;
 import site.minnan.bookkeeping.domain.repository.AdministratorRepository;
 import site.minnan.bookkeeping.domain.service.AdministratorService;
-import site.minnan.bookkeeping.domain.vo.auth.AdministratorInformationVO;
+import site.minnan.bookkeeping.userinterface.dto.in.GetAdministratorListDTO;
+import site.minnan.bookkeeping.userinterface.dto.out.AdministratorVO;
+import site.minnan.bookkeeping.userinterface.dto.out.GetAdministratorListVO;
+import site.minnan.bookkeeping.userinterface.dto.out.LoginVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
-import site.minnan.bookkeeping.userinterface.dto.AddAdministratorDTO;
-import site.minnan.bookkeeping.userinterface.dto.UpdateAdministratorDTO;
-import site.minnan.bookkeeping.userinterface.dto.UpdatePasswordDTO;
+import site.minnan.bookkeeping.userinterface.dto.in.AddAdministratorDTO;
+import site.minnan.bookkeeping.userinterface.dto.in.UpdateAdministratorDTO;
+import site.minnan.bookkeeping.userinterface.dto.in.UpdatePasswordDTO;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("AdministratorApplicationService")
 public class AdministratorApplicationServiceImpl implements AdministratorApplicationService {
@@ -53,10 +62,10 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
     }
 
     @Override
-    public AdministratorInformationVO getAdministratorInformationByUsername(String username) {
+    public LoginVO getAdministratorInformationByUsername(String username) {
         Optional<Administrator> administrator = getAdministratorByUsername(username);
         String token = jwtUtil.generateToken(administrator.get());
-        return new AdministratorInformationVO(token);
+        return new LoginVO(token);
     }
 
     /**
@@ -104,5 +113,22 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
     @Override
     public void changePassword(UpdatePasswordDTO dto) throws UserNotExistException, BadCredentialsException {
         administratorService.changePassword(dto.getId(), dto.getOldPassword(), dto.getNewPassword());
+    }
+
+    /**
+     * 获取管理员列表
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public GetAdministratorListVO getAdministratorList(GetAdministratorListDTO dto) {
+        Page<Administrator> administratorPage = administratorRepository.findAll(((root, query, criteriaBuilder) ->
+                criteriaBuilder.like(root.get("username"), dto.getUsername())), PageRequest.of(dto.getPageIndex(),
+                dto.getPageSize(), Sort.by(Sort.Direction.DESC, "createTime")));
+        List<AdministratorVO> administratorVOList = administratorPage.get()
+                .map(AdministratorVO::new)
+                .collect(Collectors.toList());
+        return new GetAdministratorListVO(administratorVOList, administratorPage.getTotalElements());
     }
 }
