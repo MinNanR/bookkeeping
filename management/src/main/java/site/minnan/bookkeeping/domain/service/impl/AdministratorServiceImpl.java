@@ -6,9 +6,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.domain.aggreates.Administrator;
 import site.minnan.bookkeeping.domain.repository.AdministratorRepository;
+import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.service.AdministratorService;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
+import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 
 import java.util.Optional;
 
@@ -21,6 +23,9 @@ public class AdministratorServiceImpl implements AdministratorService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     /**
      * 创建管理员
      *
@@ -31,8 +36,7 @@ public class AdministratorServiceImpl implements AdministratorService {
     @Override
     public void createAdministrator(String username, String password, String nickName) throws UsernameExistException {
         Optional<Administrator> administrator =
-                administratorRepository.findOne((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(
-                        "username"), username));
+                administratorRepository.findOne(SpecificationGenerator.equal("username", username));
         if (administrator.isPresent()) {
             throw new UsernameExistException("用户名已存在");
         }
@@ -48,6 +52,7 @@ public class AdministratorServiceImpl implements AdministratorService {
         if (passwordEncoder.matches(oldPassword, admin.getPassword())) {
             admin.changeInformation(Optional.empty(), Optional.of(passwordEncoder.encode(newPassword)));
             administratorRepository.save(admin);
+            redisUtil.delete("administrator:" + admin.getUsername());
         } else {
             throw new BadCredentialsException("原密码错误");
         }

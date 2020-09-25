@@ -31,6 +31,7 @@ package auth{
     Integer id
     String username
     String password
+    String opendId
     }
 }
 
@@ -103,4 +104,27 @@ package ledger{
 }
 
 User <-- Ledger
+@enduml
+
+@startuml
+class 账簿
+
+class 金库
+
+abstract class 收支流水项
+
+class 收入记录
+
+class 支出记录
+
+账簿 <-- 金库
+
+金库 <-- 收支流水项
+
+收支流水项 <|-- 收入记录
+
+收支流水项 <|-- 支出记录
+
+
+
 @enduml

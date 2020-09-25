@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -33,11 +34,10 @@ public class RedisUtil {
      */
     public List<String> scan(String pattern){
         List<String> keys = new ArrayList<>();
-        Consumer<byte[]> consumer = item -> keys.add(new String(item, StandardCharsets.UTF_8));
         redisTemplate.execute((RedisConnection connection) -> {
             try(Cursor<byte[]> cursor =
                         connection.scan(ScanOptions.scanOptions().count(Long.MAX_VALUE).match(pattern).build())){
-                cursor.forEachRemaining(consumer);
+                cursor.forEachRemaining(item -> keys.add(new String(item, StandardCharsets.UTF_8)));
                 return null;
             }catch (IOException e){
                 e.printStackTrace();
@@ -52,9 +52,9 @@ public class RedisUtil {
      * @param pattern 匹配字符串
      * @return 符合条件的第一个键，空值时表示没有匹配的键
      */
-    public String scanOne(String pattern){
+    public Optional<String> scanOne(String pattern){
         List<String> scanResult = scan(pattern);
-        return scanResult.isEmpty() ? null : scanResult.get(0);
+        return Optional.ofNullable(scanResult.get(0));
     }
 
     /**

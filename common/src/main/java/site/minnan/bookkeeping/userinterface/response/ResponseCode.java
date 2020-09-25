@@ -10,7 +10,9 @@ public enum ResponseCode {
 
     INVALID_PARAM("005", "参数非法"),
 
-    USERNAME_EXIST("010", "用户名已存在");
+    USERNAME_EXIST("010", "用户名已存在"),
+
+    UNKNOWN_ERROR("500", "未知错误");
 
     private final String code;
 

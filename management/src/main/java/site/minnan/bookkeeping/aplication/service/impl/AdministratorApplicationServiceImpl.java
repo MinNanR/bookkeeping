@@ -1,30 +1,30 @@
 package site.minnan.bookkeeping.aplication.service.impl;
 
-import com.sun.javafx.binding.BidirectionalBinding;
+import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.aplication.service.AdministratorApplicationService;
 import site.minnan.bookkeeping.domain.aggreates.Administrator;
 import site.minnan.bookkeeping.domain.repository.AdministratorRepository;
+import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.service.AdministratorService;
-import site.minnan.bookkeeping.userinterface.dto.in.GetAdministratorListDTO;
-import site.minnan.bookkeeping.userinterface.dto.out.AdministratorVO;
-import site.minnan.bookkeeping.userinterface.dto.out.GetAdministratorListVO;
-import site.minnan.bookkeeping.userinterface.dto.out.LoginVO;
+import site.minnan.bookkeeping.domain.vo.auth.AdministratorVO;
+import site.minnan.bookkeeping.domain.vo.auth.GetAdministratorListVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
+import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
-import site.minnan.bookkeeping.userinterface.dto.in.AddAdministratorDTO;
-import site.minnan.bookkeeping.userinterface.dto.in.UpdateAdministratorDTO;
-import site.minnan.bookkeeping.userinterface.dto.in.UpdatePasswordDTO;
+import site.minnan.bookkeeping.userinterface.dto.*;
 
 import java.time.Duration;
 import java.util.List;
@@ -61,11 +61,26 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
                 administrator.getRole(), true);
     }
 
+    /**
+     * 登录时获取用户信息
+     *
+     * @param username
+     * @return
+     */
     @Override
     public LoginVO getAdministratorInformationByUsername(String username) {
         Optional<Administrator> administrator = getAdministratorByUsername(username);
-        String token = jwtUtil.generateToken(administrator.get());
+        String token = StrUtil.format("Bearer {}", jwtUtil.generateToken(administrator.get()));
         return new LoginVO(token);
+    }
+
+    /**
+     * 退出登录
+     */
+    @Override
+    public void logout() {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        redisUtil.delete(StrUtil.format("administrator:{}", jwtUser.getUsername()));
     }
 
     /**
@@ -85,13 +100,13 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      * @return
      */
     public Optional<Administrator> getAdministratorByUsername(String username) {
-        Administrator administrator = (Administrator) redisUtil.getValue("administrator:" + username);
+        Administrator administrator = (Administrator) redisUtil.getValue(StrUtil.format("administrator:{}",
+                username));
         if (administrator != null) {
             return Optional.of(administrator);
         }
         Optional<Administrator> administratorInDB =
-                administratorRepository.findOne((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.get("username"), username));
+                administratorRepository.findOne(SpecificationGenerator.equal("username", username));
         administratorInDB.ifPresent(value -> redisUtil.valueSet("administrator:" + username, value,
                 Duration.ofDays(1)));
         return administratorInDB;
@@ -110,6 +125,13 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
         administratorRepository.save(administrator);
     }
 
+    /**
+     * 修改管理员密码
+     *
+     * @param dto
+     * @throws UserNotExistException
+     * @throws BadCredentialsException
+     */
     @Override
     public void changePassword(UpdatePasswordDTO dto) throws UserNotExistException, BadCredentialsException {
         administratorService.changePassword(dto.getId(), dto.getOldPassword(), dto.getNewPassword());
@@ -123,12 +145,24 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      */
     @Override
     public GetAdministratorListVO getAdministratorList(GetAdministratorListDTO dto) {
-        Page<Administrator> administratorPage = administratorRepository.findAll(((root, query, criteriaBuilder) ->
-                criteriaBuilder.like(root.get("username"), dto.getUsername())), PageRequest.of(dto.getPageIndex(),
+        String username = Optional.ofNullable(dto.getUsername()).orElse("");
+        Page<Administrator> administratorPage =
+                administratorRepository.findAll(SpecificationGenerator.like("username", username),
+        PageRequest.of(dto.getPageIndex(),
                 dto.getPageSize(), Sort.by(Sort.Direction.DESC, "createTime")));
         List<AdministratorVO> administratorVOList = administratorPage.get()
                 .map(AdministratorVO::new)
                 .collect(Collectors.toList());
         return new GetAdministratorListVO(administratorVOList, administratorPage.getTotalElements());
+    }
+
+    /**
+     * 删除管理员（根据id）
+     *
+     * @param dto
+     */
+    @Override
+    public void deleteAdministrator(DeleteAdministratorDTO dto) throws EmptyResultDataAccessException {
+        administratorRepository.deleteById(dto.getId());
     }
 }

@@ -1,4 +1,4 @@
-package site.minnan.bookkeeping.userinterface.dto.in;
+package site.minnan.bookkeeping.userinterface.dto;
 
 import com.google.common.base.Objects;
 import lombok.Data;

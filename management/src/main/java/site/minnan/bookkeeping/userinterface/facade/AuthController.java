@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.minnan.bookkeeping.aplication.service.AdministratorApplicationService;
-import site.minnan.bookkeeping.userinterface.dto.out.LoginVO;
-import site.minnan.bookkeeping.userinterface.dto.in.LoginDTO;
-import site.minnan.bookkeeping.userinterface.dto.in.OptionalDTO;
+import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
+import site.minnan.bookkeeping.infrastructure.annocation.OperateType;
+import site.minnan.bookkeeping.userinterface.dto.LoginDTO;
+import site.minnan.bookkeeping.userinterface.dto.OptionalDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 @Slf4j
@@ -38,6 +39,7 @@ public class AuthController {
      * @return
      * @throws Exception
      */
+    @OperateType("登录")
     @PostMapping("login")
     public ResponseEntity<LoginVO> createAuthenticationToken(@RequestBody LoginDTO dto) throws Exception {
         log.info("用户登录，登录信息：{}", dto.toString());
@@ -53,14 +55,12 @@ public class AuthController {
         return ResponseEntity.success(vo);
     }
 
+    @OperateType("登出")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @PostMapping("test")
-    public ResponseEntity<String> getAdministrator(@RequestBody OptionalDTO dto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Console.log(authentication.getPrincipal());
-        return ResponseEntity.success(dto.getNickName().orElse("is null"));
+    @PostMapping("logout")
+    public ResponseEntity<?> getAdministrator(@RequestBody OptionalDTO dto) {
+        administratorApplicationService.logout();
+        return ResponseEntity.success();
     }
-
-
 
 }

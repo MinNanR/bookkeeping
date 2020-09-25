@@ -1,4 +1,4 @@
-package site.minnan.bookkeeping.userinterface.dto.out;
+package site.minnan.bookkeeping.domain.vo.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

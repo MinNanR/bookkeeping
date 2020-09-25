@@ -44,7 +44,8 @@ public class ResponseEntity<T> {
 
     public static<T> ResponseEntity<T> fail(String message){
         ResponseEntity<T> responseEntity = new ResponseEntity<>();
-        responseEntity.code = "001";
+        ResponseCode responseCode = ResponseCode.FAIL;
+        responseEntity.code = responseCode.code();
         responseEntity.message = message;
         return responseEntity;
     }
