@@ -148,8 +148,8 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
         String username = Optional.ofNullable(dto.getUsername()).orElse("");
         Page<Administrator> administratorPage =
                 administratorRepository.findAll(SpecificationGenerator.like("username", username),
-        PageRequest.of(dto.getPageIndex(),
-                dto.getPageSize(), Sort.by(Sort.Direction.DESC, "createTime")));
+                        PageRequest.of(dto.getPageIndex() - 1,
+                                dto.getPageSize(), Sort.by(Sort.Direction.DESC, "createTime")));
         List<AdministratorVO> administratorVOList = administratorPage.get()
                 .map(AdministratorVO::new)
                 .collect(Collectors.toList());

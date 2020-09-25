@@ -1,6 +1,7 @@
 package site.minnan.bookkeeping.domain.repository;
 
 import cn.hutool.core.util.StrUtil;
+import org.hibernate.criterion.CriteriaQuery;
 import org.springframework.data.jpa.domain.Specification;
 
 public class SpecificationGenerator {

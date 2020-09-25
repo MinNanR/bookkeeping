@@ -9,7 +9,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import site.minnan.bookkeeping.domain.service.LogService;
+import site.minnan.bookkeeping.aplication.service.LogApplicationService;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class LogAop {
 
     @Autowired
-    private LogService logService;
+    private LogApplicationService logApplicationService;
 
     @Autowired
     private HttpServletRequest request;
@@ -57,7 +57,7 @@ public class LogAop {
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
         Optional<OperateLog> operateLog = Optional.of(methodSignature.getMethod().getAnnotation(OperateLog.class));
         operateLog.ifPresent(log -> {
-            logService.addLog(log, request);
+            logApplicationService.addLog(log, request);
         });
         return retValue;
     }

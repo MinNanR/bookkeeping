@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,8 @@ import site.minnan.bookkeeping.infrastructure.annocation.Operation;
 import site.minnan.bookkeeping.userinterface.dto.LoginDTO;
 import site.minnan.bookkeeping.userinterface.dto.OptionalDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -40,7 +43,7 @@ public class AuthController {
      */
     @OperateLog(operation = Operation.LOGIN, module = "系统登录", content = "登录成功")
     @PostMapping("login")
-    public ResponseEntity<LoginVO> createAuthenticationToken(@RequestBody LoginDTO dto) throws Exception {
+    public ResponseEntity<LoginVO> createAuthenticationToken(@RequestBody LoginDTO dto, HttpServletRequest request) throws Exception {
         log.info("用户登录，登录信息：{}", dto.toString());
         try {
             manager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
