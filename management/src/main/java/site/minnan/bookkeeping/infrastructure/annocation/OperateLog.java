@@ -7,6 +7,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OperateType {
-    String value() default "";
+public @interface OperateLog {
+    Operation operation();
+
+    String module() default "";
+
+    String content() default "";
 }

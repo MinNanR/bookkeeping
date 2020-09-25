@@ -5,12 +5,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import site.minnan.bookkeeping.aplication.service.AdministratorApplicationService;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
+import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
+import site.minnan.bookkeeping.infrastructure.annocation.Operation;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
 import site.minnan.bookkeeping.userinterface.dto.*;
@@ -33,6 +32,7 @@ public class AdministratorController {
      * @param dto
      * @return
      */
+    @OperateLog(operation = Operation.ADD, module = "管理员", content = "添加管理员")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("createAdministrator")
     public ResponseEntity<?> createAdministrator(@RequestBody @Valid AddAdministratorDTO dto) {
@@ -51,6 +51,7 @@ public class AdministratorController {
      * @param dto
      * @return
      */
+    @OperateLog(operation = Operation.UPDATE, module = "管理员",content = "修改管理员信息")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("updateAdministrator")
     public ResponseEntity<?> updateAdministrator(@RequestBody UpdateAdministratorDTO dto) {
@@ -70,6 +71,7 @@ public class AdministratorController {
      * @param dto
      * @return
      */
+    @OperateLog(operation = Operation.UPDATE, module = "管理员", content = "修改管理员密码")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("changePassword")
     public ResponseEntity<?> updatePassword(@RequestBody @Valid UpdatePasswordDTO dto) {
@@ -102,6 +104,7 @@ public class AdministratorController {
      * @param dto
      * @return
      */
+    @OperateLog(operation = Operation.DELETE, module = "管理员", content = "删除管理员")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("deleteAdministrator")
     public ResponseEntity<?> deleteAdministrator(@RequestBody @Valid DeleteAdministratorDTO dto) {
