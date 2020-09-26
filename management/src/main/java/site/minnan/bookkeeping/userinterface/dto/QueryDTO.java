@@ -3,10 +3,13 @@ package site.minnan.bookkeeping.userinterface.dto;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 @Data
-public class GetAdministratorListDTO extends QueryDTO{
+public class QueryDTO {
 
-    private String username;
+    @NotNull
+    private Integer pageIndex;
+
+    @NotNull
+    private Integer pageSize;
 }

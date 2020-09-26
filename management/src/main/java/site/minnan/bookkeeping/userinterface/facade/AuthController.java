@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +47,9 @@ public class AuthController {
     public ResponseEntity<LoginVO> createAuthenticationToken(@RequestBody LoginDTO dto, HttpServletRequest request) throws Exception {
         log.info("用户登录，登录信息：{}", dto.toString());
         try {
-            manager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
+            Authentication authentication =
+                    manager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (DisabledException e) {
             throw new Exception("用户被禁用", e);
         } catch (BadCredentialsException e) {
@@ -60,7 +63,7 @@ public class AuthController {
     @OperateLog(operation = Operation.LOGOUT, module = "权限", content = "登出成功")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("logout")
-    public ResponseEntity<?> getAdministrator(@RequestBody OptionalDTO dto) {
+    public ResponseEntity<?> getAdministrator() {
         administratorApplicationService.logout();
         return ResponseEntity.success();
     }

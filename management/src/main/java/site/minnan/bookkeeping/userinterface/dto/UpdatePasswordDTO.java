@@ -13,7 +13,7 @@ public class UpdatePasswordDTO implements Serializable {
     Integer id;
 
     @NotBlank
-    String oldPassword;
+    String originalPassword;
 
     @NotBlank
     String newPassword;

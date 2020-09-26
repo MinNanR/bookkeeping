@@ -88,5 +88,4 @@ public class SpecificationGenerator {
         return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get(property), start, end);
     }
 
-
 }

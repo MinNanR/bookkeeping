@@ -33,10 +33,11 @@ public class LogAop {
     private ObjectMapper objectMapper;
 
     @Pointcut("execution(public * site.minnan.bookkeeping.userinterface.facade..*..*(..))")
-    public void controllerLog(){}
+    public void controllerLog() {
+    }
 
     @Around(value = "controllerLog()")
-    public Object logAroundController(ProceedingJoinPoint proceedingJoinPoint) throws Throwable{
+    public Object logAroundController(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         long time = System.currentTimeMillis();
         Object[] args = proceedingJoinPoint.getArgs();
         List<String> argStringList = Arrays.stream(args).map(Object::toString).collect(Collectors.toList());
@@ -44,18 +45,14 @@ public class LogAop {
         String methodFullName = proceedingJoinPoint.getTarget().getClass().getName()
                 + "." + proceedingJoinPoint.getSignature().getName();
         log.info("controller调用{}，参数：{}", methodFullName, argsString);
-        Object retValue = null;
-        try {
-            retValue = proceedingJoinPoint.proceed();
-        } catch (Throwable throwable) {
-            log.error("调用接口异常", throwable);
-        }
+        Object retValue = proceedingJoinPoint.proceed();
         time = System.currentTimeMillis() - time;
         String responseString = objectMapper.writeValueAsString(retValue);
         log.info("controller调用{}完成，返回数据:{}，用时{}ms", methodFullName, responseString, time);
         //获取操作类型
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
-        Optional<OperateLog> operateLog = Optional.of(methodSignature.getMethod().getAnnotation(OperateLog.class));
+        Optional<OperateLog> operateLog =
+                Optional.ofNullable(methodSignature.getMethod().getAnnotation(OperateLog.class));
         operateLog.ifPresent(log -> {
             logApplicationService.addLog(log, request);
         });

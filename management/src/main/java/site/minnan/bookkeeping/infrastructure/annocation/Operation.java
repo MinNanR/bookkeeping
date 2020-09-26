@@ -14,9 +14,18 @@ public enum Operation {
 
     LOGOUT("登出");
 
-    private String operationName;
+    private final String operationName;
 
     Operation(String operationName){
         this.operationName = operationName;
+    }
+
+    public String operationName(){
+        return operationName;
+    }
+
+    @Override
+    public String toString() {
+        return this.operationName;
     }
 }

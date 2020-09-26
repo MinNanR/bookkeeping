@@ -26,6 +26,8 @@ import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 import site.minnan.bookkeeping.userinterface.dto.*;
 
+import javax.persistence.criteria.Predicate;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -121,7 +123,8 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
     public void updateAdministrator(UpdateAdministratorDTO dto) throws UserNotExistException {
         Optional<Administrator> administratorInDB = administratorRepository.findById(dto.getId());
         Administrator administrator = administratorInDB.orElseThrow(UserNotExistException::new);
-        administrator.changeInformation(dto.getNickName(), Optional.empty());
+        Optional<String> nickName = Optional.ofNullable(dto.getNickName());
+        administrator.changeInformation(nickName, Optional.empty());
         administratorRepository.save(administrator);
     }
 
@@ -134,7 +137,7 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      */
     @Override
     public void changePassword(UpdatePasswordDTO dto) throws UserNotExistException, BadCredentialsException {
-        administratorService.changePassword(dto.getId(), dto.getOldPassword(), dto.getNewPassword());
+        administratorService.changePassword(dto.getId(), dto.getOriginalPassword(), dto.getNewPassword());
     }
 
     /**

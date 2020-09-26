@@ -9,5 +9,5 @@ public class UpdateAdministratorDTO {
 
     Integer id;
 
-    Optional<String> nickName;
+    String nickName;
 }

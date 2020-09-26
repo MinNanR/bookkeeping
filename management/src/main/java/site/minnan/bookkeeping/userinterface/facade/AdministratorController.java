@@ -18,6 +18,7 @@ import site.minnan.bookkeeping.userinterface.response.ResponseCode;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("management/administrator")
@@ -55,8 +56,10 @@ public class AdministratorController {
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("updateAdministrator")
     public ResponseEntity<?> updateAdministrator(@RequestBody UpdateAdministratorDTO dto) {
-        JwtUser principal = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        dto.setId(principal.getId());
+        if (dto.getId() == null) {
+            JwtUser principal = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            dto.setId(principal.getId());
+        }
         try {
             administratorApplicationService.updateAdministrator(dto);
             return ResponseEntity.success();

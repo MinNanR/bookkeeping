@@ -9,7 +9,8 @@ import java.sql.Timestamp;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "log")
 @Entity
-public class OperationLog {
+@Getter
+public class Log {
 
     /**
      * 主键id
@@ -69,9 +70,9 @@ public class OperationLog {
     @Column(name = "create_time", columnDefinition = "TIMESTAMP comment '操作时间'")
     private Timestamp createTime;
 
-    public static OperationLog of(Integer userId, String username, String operation, String module, String operateContent,
-                                  String requestUri,
-                                  String ip, Timestamp createTime){
-        return new OperationLog(null, userId, username, operation,module, operateContent, requestUri, ip ,createTime);
+    public static Log of(Integer userId, String username, String operation, String module, String operateContent,
+                         String requestUri,
+                         String ip, Timestamp createTime){
+        return new Log(null, userId, username, operation,module, operateContent, requestUri, ip ,createTime);
     }
 }

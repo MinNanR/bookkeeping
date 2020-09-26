@@ -1,5 +1,6 @@
 package site.minnan.bookkeeping.infrastructure.exception;
 
+import cn.hutool.core.lang.Console;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,7 +26,15 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error("Parameter Error,execute in : {},target : {}",ex.getParameter().getExecutable() ,ex.getBindingResult().getTarget());
+        log.error("Parameter Error,execute in : {},target : {}", ex.getParameter().getExecutable(),
+                ex.getBindingResult().getTarget());
         return ResponseEntity.fail(ResponseCode.INVALID_PARAM);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ResponseEntity<?> handleUnknownExpcetion(Exception ex) {
+        log.error("unknown error", ex);
+        return ResponseEntity.fail(ResponseCode.UNKNOWN_ERROR);
     }
 }
