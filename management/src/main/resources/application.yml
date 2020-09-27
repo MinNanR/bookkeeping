@@ -18,6 +18,11 @@ spring:
       ddl-auto: update
     database: mysql
 
+  data:
+    redis:
+      repositories:
+        enabled: false
+
 server:
   port: 8901
 

@@ -21,20 +21,20 @@ public class Administrator {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "username", length = 50, nullable = false, columnDefinition = "comment '用户名'")
+    @Column(name = "username",nullable = false, columnDefinition = "varchar(50) comment '用户名'")
     private String username;
 
-    @Column(name = "password", length = 100, nullable = false, columnDefinition = "comment '密码'")
+    @Column(name = "password",  nullable = false, columnDefinition = "varchar(100) comment '密码'")
     private String password;
 
-    @Column(name = "nick_name", length = 20, columnDefinition = "comment '昵称'")
+    @Column(name = "nick_name", columnDefinition = "varchar(20) comment '昵称'")
     private String nickName;
 
     @Setter
-    @Column(name = "role", length = 20, columnDefinition = "comment '角色'")
+    @Column(name = "role", columnDefinition = "varchar(20) comment '角色'")
     private String role;
 
-    @Column(name = "create_time")
+    @Column(name = "create_time", columnDefinition = "timestamp comment '创建时间'")
     private Timestamp createTime;
 
     public static Administrator of(String username, String password, String nickName) {

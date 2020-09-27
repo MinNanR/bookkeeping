@@ -3,11 +3,12 @@ package site.minnan.bookkeeping.aplication.service;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import site.minnan.bookkeeping.userinterface.dto.*;
-import site.minnan.bookkeeping.domain.vo.auth.GetAdministratorListVO;
+import site.minnan.bookkeeping.domain.vo.QueryVO;
+import site.minnan.bookkeeping.domain.vo.auth.AdministratorVO;
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
+import site.minnan.bookkeeping.userinterface.dto.auth.*;
 
 public interface AdministratorApplicationService extends UserDetailsService {
 
@@ -30,7 +31,7 @@ public interface AdministratorApplicationService extends UserDetailsService {
      *
      * @param dto
      */
-    void createAdministrator(AddAdministratorDTO dto) throws UsernameExistException;
+    void createAdministrator(AddAdministratorDTO dto) throws EntityExistException;
 
     /**
      * 修改管理员信息
@@ -52,7 +53,7 @@ public interface AdministratorApplicationService extends UserDetailsService {
      * @param dto
      * @return
      */
-    GetAdministratorListVO getAdministratorList(GetAdministratorListDTO dto);
+    QueryVO<AdministratorVO> getAdministratorList(GetAdministratorListDTO dto);
 
     /**
      * 删除管理员（根据id）

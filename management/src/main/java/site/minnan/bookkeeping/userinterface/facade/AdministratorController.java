@@ -7,18 +7,17 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import site.minnan.bookkeeping.aplication.service.AdministratorApplicationService;
+import site.minnan.bookkeeping.domain.vo.QueryVO;
+import site.minnan.bookkeeping.domain.vo.auth.AdministratorVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 import site.minnan.bookkeeping.infrastructure.annocation.Operation;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
-import site.minnan.bookkeeping.userinterface.dto.*;
-import site.minnan.bookkeeping.domain.vo.auth.GetAdministratorListVO;
-import site.minnan.bookkeeping.userinterface.response.ResponseCode;
+import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
+import site.minnan.bookkeeping.userinterface.dto.auth.*;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("management/administrator")
@@ -40,7 +39,7 @@ public class AdministratorController {
         try {
             administratorApplicationService.createAdministrator(dto);
             return ResponseEntity.success();
-        } catch (UsernameExistException e) {
+        } catch (EntityExistException e) {
             return ResponseEntity.fail("用户名已存在");
         }
     }
@@ -96,8 +95,8 @@ public class AdministratorController {
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("getAdministratorList")
-    public ResponseEntity<GetAdministratorListVO> getAdministratorList(@RequestBody @Valid GetAdministratorListDTO dto) {
-        GetAdministratorListVO vo = administratorApplicationService.getAdministratorList(dto);
+    public ResponseEntity<QueryVO<AdministratorVO>> getAdministratorList(@RequestBody @Valid GetAdministratorListDTO dto) {
+        QueryVO<AdministratorVO> vo = administratorApplicationService.getAdministratorList(dto);
         return ResponseEntity.success(vo);
     }
 

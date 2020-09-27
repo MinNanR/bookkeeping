@@ -1,5 +1,6 @@
 package site.minnan.bookkeeping.aplication.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelWriter;
@@ -9,24 +10,27 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import site.minnan.bookkeeping.aplication.service.LogApplicationService;
 import site.minnan.bookkeeping.domain.aggreates.Log;
 import site.minnan.bookkeeping.domain.repository.LogRepository;
-import site.minnan.bookkeeping.aplication.service.LogApplicationService;
+import site.minnan.bookkeeping.domain.vo.QueryVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
-import site.minnan.bookkeeping.domain.vo.log.GetLogListVO;
 import site.minnan.bookkeeping.domain.vo.log.LogVO;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 import site.minnan.bookkeeping.infrastructure.annocation.Operation;
 import site.minnan.bookkeeping.infrastructure.utils.WebUtil;
-import site.minnan.bookkeeping.userinterface.dto.DownloadLogDTO;
-import site.minnan.bookkeeping.userinterface.dto.GetLogListDTO;
+import site.minnan.bookkeeping.userinterface.dto.log.DownloadLogDTO;
+import site.minnan.bookkeeping.userinterface.dto.log.GetLogListDTO;
 
 import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletRequest;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,7 +65,7 @@ public class LogApplicationServiceImpl implements LogApplicationService {
      * @return
      */
     @Override
-    public GetLogListVO getLogList(GetLogListDTO dto) {
+    public QueryVO<LogVO> getLogList(GetLogListDTO dto) {
         Optional<String> usernameOptional = Optional.ofNullable(dto.getUsername());
         Optional<String> operationOptional = Optional.ofNullable(dto.getOperation());
         Page<Log> logPage = logRepository.findAll((root, query, criteriaBuilder) -> {
@@ -76,7 +80,7 @@ public class LogApplicationServiceImpl implements LogApplicationService {
         List<LogVO> logVOList = logPage.get()
                 .map(LogVO::new)
                 .collect(Collectors.toList());
-        return new GetLogListVO(logVOList, logPage.getTotalElements());
+        return new QueryVO<>(logVOList, logPage.getTotalElements());
     }
 
     /**
@@ -102,7 +106,7 @@ public class LogApplicationServiceImpl implements LogApplicationService {
                     Map<String, Object> item = new LinkedHashMap<>();
                     item.put("用户名", log.getUsername());
                     item.put("IP", log.getIp());
-                    item.put("操作时间", log.getCreateTime());
+                    item.put("操作时间", DateUtil.format(log.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
                     item.put("模块", log.getModule());
                     item.put("操作", log.getOperation());
                     item.put("操作内容", log.getOperateContent());
@@ -111,6 +115,12 @@ public class LogApplicationServiceImpl implements LogApplicationService {
                 .collect(Collectors.toList());
         ExcelWriter writer = new ExcelWriter();
         writer.write(data, true);
+        writer.setColumnWidth(0, 10);
+        writer.setColumnWidth(1, 18);
+        writer.setColumnWidth(2, 22);
+        writer.setColumnWidth(3, 10);
+        writer.setColumnWidth(4, 10);
+        writer.setColumnWidth(5, 10);
         writer.flush(outputStream, true);
         IoUtil.close(outputStream);
     }

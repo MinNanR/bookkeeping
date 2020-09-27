@@ -1,6 +1,5 @@
 package site.minnan.bookkeeping.userinterface.facade;
 
-import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import site.minnan.bookkeeping.aplication.service.LogApplicationService;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 import site.minnan.bookkeeping.infrastructure.annocation.Operation;
-import site.minnan.bookkeeping.userinterface.dto.DownloadLogDTO;
+import site.minnan.bookkeeping.userinterface.dto.log.DownloadLogDTO;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +33,7 @@ public class FileController {
         ServletOutputStream outputStream = null;
         try {
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            String fileName = StrUtil.format("日志_{}", DateUtil.format(DateUtil.date(), "yyyy-MM-dd_HH:mm"));
+            String fileName = StrUtil.format("log_{}", DateUtil.format(DateUtil.date(), "yyyy-MM-dd_HH-mm"));
             response.setHeader("Content-Disposition", StrUtil.format("attachment;filename={}.xls", fileName));
             outputStream = response.getOutputStream();
             logApplicationService.downloadLogList(dto, outputStream);

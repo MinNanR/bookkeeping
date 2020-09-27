@@ -9,7 +9,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +17,7 @@ import site.minnan.bookkeeping.aplication.service.AdministratorApplicationServic
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 import site.minnan.bookkeeping.infrastructure.annocation.Operation;
-import site.minnan.bookkeeping.userinterface.dto.LoginDTO;
-import site.minnan.bookkeeping.userinterface.dto.OptionalDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.LoginDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;

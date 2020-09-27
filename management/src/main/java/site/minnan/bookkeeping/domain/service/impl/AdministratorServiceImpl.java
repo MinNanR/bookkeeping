@@ -9,7 +9,7 @@ import site.minnan.bookkeeping.domain.repository.AdministratorRepository;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.service.AdministratorService;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 
 import java.util.Optional;
@@ -34,11 +34,11 @@ public class AdministratorServiceImpl implements AdministratorService {
      * @param nickName 昵称
      */
     @Override
-    public void createAdministrator(String username, String password, String nickName) throws UsernameExistException {
+    public void createAdministrator(String username, String password, String nickName) throws EntityExistException {
         Optional<Administrator> administrator =
                 administratorRepository.findOne(SpecificationGenerator.equal("username", username));
         if (administrator.isPresent()) {
-            throw new UsernameExistException("用户名已存在");
+            throw new EntityExistException("用户名已存在");
         }
         password = passwordEncoder.encode(password);
         Administrator newAdmin = Administrator.of(username, password, nickName);

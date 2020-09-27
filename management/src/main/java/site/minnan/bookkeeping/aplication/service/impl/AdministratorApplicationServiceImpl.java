@@ -16,18 +16,16 @@ import site.minnan.bookkeeping.domain.aggreates.Administrator;
 import site.minnan.bookkeeping.domain.repository.AdministratorRepository;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.service.AdministratorService;
+import site.minnan.bookkeeping.domain.vo.QueryVO;
 import site.minnan.bookkeeping.domain.vo.auth.AdministratorVO;
-import site.minnan.bookkeeping.domain.vo.auth.GetAdministratorListVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
-import site.minnan.bookkeeping.userinterface.dto.*;
+import site.minnan.bookkeeping.userinterface.dto.auth.*;
 
-import javax.persistence.criteria.Predicate;
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -91,7 +89,7 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      * @param dto
      */
     @Override
-    public void createAdministrator(AddAdministratorDTO dto) throws UsernameExistException {
+    public void createAdministrator(AddAdministratorDTO dto) throws EntityExistException {
         administratorService.createAdministrator(dto.getUsername(), dto.getPassword(), dto.getNickName());
     }
 
@@ -147,7 +145,7 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      * @return
      */
     @Override
-    public GetAdministratorListVO getAdministratorList(GetAdministratorListDTO dto) {
+    public QueryVO<AdministratorVO> getAdministratorList(GetAdministratorListDTO dto) {
         String username = Optional.ofNullable(dto.getUsername()).orElse("");
         Page<Administrator> administratorPage =
                 administratorRepository.findAll(SpecificationGenerator.like("username", username),
@@ -156,7 +154,7 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
         List<AdministratorVO> administratorVOList = administratorPage.get()
                 .map(AdministratorVO::new)
                 .collect(Collectors.toList());
-        return new GetAdministratorListVO(administratorVOList, administratorPage.getTotalElements());
+        return new QueryVO<>(administratorVOList, administratorPage.getTotalElements());
     }
 
     /**

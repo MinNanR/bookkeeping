@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "log")
+@Table(name = "e_log")
 @Entity
 @Getter
 public class Log {
@@ -22,7 +22,7 @@ public class Log {
     /**
      * 操作者id
      */
-    @Column(name = "user_id", columnDefinition = "varchar(50) comment '操作者id'")
+    @Column(name = "user_id", columnDefinition = "int comment '操作者id'")
     private Integer userId;
 
     /**

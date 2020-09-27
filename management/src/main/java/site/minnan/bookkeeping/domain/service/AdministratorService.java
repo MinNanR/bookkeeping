@@ -2,7 +2,7 @@ package site.minnan.bookkeeping.domain.service;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.UsernameExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
 
 public interface AdministratorService {
 
@@ -12,7 +12,7 @@ public interface AdministratorService {
      * @param password 密码
      * @param nickName 昵称
      */
-    void createAdministrator(String username, String password, String nickName) throws UsernameExistException;
+    void createAdministrator(String username, String password, String nickName) throws EntityExistException;
 
     /**
      * 修改密码
