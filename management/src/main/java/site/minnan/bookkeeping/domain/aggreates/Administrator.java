@@ -21,10 +21,10 @@ public class Administrator {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "username",nullable = false, columnDefinition = "varchar(50) comment '用户名'")
+    @Column(name = "username", nullable = false, columnDefinition = "varchar(50) comment '用户名'")
     private String username;
 
-    @Column(name = "password",  nullable = false, columnDefinition = "varchar(100) comment '密码'")
+    @Column(name = "password", nullable = false, columnDefinition = "varchar(100) comment '密码'")
     private String password;
 
     @Column(name = "nick_name", columnDefinition = "varchar(20) comment '昵称'")
@@ -57,5 +57,10 @@ public class Administrator {
     public void changeInformation(Optional<String> nickName, Optional<String> password) {
         nickName.ifPresent(value -> this.nickName = value);
         password.ifPresent(value -> this.password = value);
+    }
+
+    public Administrator(Integer id, String username) {
+        this.id = id;
+        this.username = username;
     }
 }

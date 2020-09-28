@@ -12,8 +12,8 @@ import site.minnan.bookkeeping.domain.vo.auth.AdministratorVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 import site.minnan.bookkeeping.infrastructure.annocation.Operation;
-import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.bookkeeping.userinterface.dto.auth.*;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
@@ -39,7 +39,7 @@ public class AdministratorController {
         try {
             administratorApplicationService.createAdministrator(dto);
             return ResponseEntity.success();
-        } catch (EntityExistException e) {
+        } catch (EntityAlreadyExistException e) {
             return ResponseEntity.fail("用户名已存在");
         }
     }
@@ -62,7 +62,7 @@ public class AdministratorController {
         try {
             administratorApplicationService.updateAdministrator(dto);
             return ResponseEntity.success();
-        } catch (UserNotExistException e) {
+        } catch (EntityNotExistException e) {
             return ResponseEntity.fail("用户不存在");
         }
     }
@@ -82,7 +82,7 @@ public class AdministratorController {
             dto.setId(user.getId());
             administratorApplicationService.changePassword(dto);
             return ResponseEntity.success();
-        } catch (UserNotExistException | BadCredentialsException e) {
+        } catch (EntityNotExistException | BadCredentialsException e) {
             return ResponseEntity.fail(e.getMessage());
         }
     }

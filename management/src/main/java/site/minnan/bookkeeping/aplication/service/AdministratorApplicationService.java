@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import site.minnan.bookkeeping.domain.vo.QueryVO;
 import site.minnan.bookkeeping.domain.vo.auth.AdministratorVO;
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
-import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.bookkeeping.userinterface.dto.auth.*;
 
 public interface AdministratorApplicationService extends UserDetailsService {
@@ -31,21 +31,21 @@ public interface AdministratorApplicationService extends UserDetailsService {
      *
      * @param dto
      */
-    void createAdministrator(AddAdministratorDTO dto) throws EntityExistException;
+    void createAdministrator(AddAdministratorDTO dto) throws EntityAlreadyExistException;
 
     /**
      * 修改管理员信息
      *
      * @param dto
      */
-    void updateAdministrator(UpdateAdministratorDTO dto) throws UserNotExistException;
+    void updateAdministrator(UpdateAdministratorDTO dto) throws EntityNotExistException;
 
     /**
      * 修改管理员密码
      *
      * @param dto
      */
-    void changePassword(UpdatePasswordDTO dto) throws UserNotExistException, BadCredentialsException;
+    void changePassword(UpdatePasswordDTO dto) throws EntityNotExistException, BadCredentialsException;
 
     /**
      * 获取管理员列表
@@ -61,4 +61,5 @@ public interface AdministratorApplicationService extends UserDetailsService {
      * @param dto
      */
     void deleteAdministrator(DeleteAdministratorDTO dto) throws EmptyResultDataAccessException;
+
 }

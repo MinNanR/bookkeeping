@@ -33,7 +33,9 @@ public class ExpenseType {
         return new ExpenseType(null, typeName, Timestamp.from(Instant.now()), updateUserId);
     }
 
-    public void changeTypeName(String typeName){
+    public void changeTypeName(String typeName, Integer updateUserId){
         this.typeName = typeName;
+        this.updateUserId = updateUserId;
+        this.updateTime = Timestamp.from(Instant.now());
     }
 }

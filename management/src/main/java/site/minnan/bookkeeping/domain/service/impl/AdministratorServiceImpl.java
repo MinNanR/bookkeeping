@@ -8,11 +8,11 @@ import site.minnan.bookkeeping.domain.aggreates.Administrator;
 import site.minnan.bookkeeping.domain.repository.AdministratorRepository;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.service.AdministratorService;
-import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AdministratorServiceImpl implements AdministratorService {
@@ -34,11 +34,11 @@ public class AdministratorServiceImpl implements AdministratorService {
      * @param nickName 昵称
      */
     @Override
-    public void createAdministrator(String username, String password, String nickName) throws EntityExistException {
+    public void createAdministrator(String username, String password, String nickName) throws EntityAlreadyExistException {
         Optional<Administrator> administrator =
                 administratorRepository.findOne(SpecificationGenerator.equal("username", username));
         if (administrator.isPresent()) {
-            throw new EntityExistException("用户名已存在");
+            throw new EntityAlreadyExistException("用户名已存在");
         }
         password = passwordEncoder.encode(password);
         Administrator newAdmin = Administrator.of(username, password, nickName);
@@ -46,9 +46,9 @@ public class AdministratorServiceImpl implements AdministratorService {
     }
 
     @Override
-    public void changePassword(Integer administratorId, String oldPassword, String newPassword) throws UserNotExistException, BadCredentialsException {
+    public void changePassword(Integer administratorId, String oldPassword, String newPassword) throws EntityNotExistException, BadCredentialsException {
         Optional<Administrator> administrator = administratorRepository.findById(administratorId);
-        Administrator admin = administrator.orElseThrow(() -> new UserNotExistException("用户不存在"));
+        Administrator admin = administrator.orElseThrow(() -> new EntityNotExistException("用户不存在"));
         if (passwordEncoder.matches(oldPassword, admin.getPassword())) {
             admin.changeInformation(Optional.empty(), Optional.of(passwordEncoder.encode(newPassword)));
             administratorRepository.save(admin);
@@ -56,5 +56,13 @@ public class AdministratorServiceImpl implements AdministratorService {
         } else {
             throw new BadCredentialsException("原密码错误");
         }
+    }
+
+    @Override
+    public Map<Integer, String> mapAdministratorIdToUsername(Collection<Integer> ids) {
+        List<Administrator> administratorList = administratorRepository.findAdministratorsById(ids);
+        return administratorList.stream().collect(HashMap::new,
+                (hashMap, admin) -> hashMap.put(admin.getId(),
+                admin.getUsername()), HashMap::putAll);
     }
 }

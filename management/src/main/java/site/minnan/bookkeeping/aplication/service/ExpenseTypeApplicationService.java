@@ -1,14 +1,45 @@
 package site.minnan.bookkeeping.aplication.service;
 
-import site.minnan.bookkeeping.domain.entity.ExpenseType;
+import org.springframework.dao.EmptyResultDataAccessException;
 import site.minnan.bookkeeping.domain.vo.QueryVO;
-import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
-import site.minnan.bookkeeping.userinterface.dto.expensetype.ExpenseTypeDTO;
+import site.minnan.bookkeeping.domain.vo.expensetype.ExpenseTypeVO;
+import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
+import site.minnan.bookkeeping.userinterface.dto.DeleteExpenseTypeDTO;
+import site.minnan.bookkeeping.userinterface.dto.expensetype.AddExpenseTypeDTO;
 import site.minnan.bookkeeping.userinterface.dto.expensetype.GetExpenseTypeListDTO;
+import site.minnan.bookkeeping.userinterface.dto.expensetype.UpdateExpenseTypeDTO;
 
 public interface ExpenseTypeApplicationService {
 
-    void addExpenseType(ExpenseTypeDTO dto) throws EntityExistException;
+    /**
+     * 添加支出类型
+     *
+     * @param dto
+     * @throws EntityAlreadyExistException
+     */
+    void addExpenseType(AddExpenseTypeDTO dto) throws EntityAlreadyExistException;
 
-    QueryVO<ExpenseType> getExpenseTypeList(GetExpenseTypeListDTO dto);
+    /**
+     * 查询支出类型
+     *
+     * @param dto
+     * @return
+     */
+    QueryVO<ExpenseTypeVO> getExpenseTypeList(GetExpenseTypeListDTO dto);
+
+    /**
+     * 修改支出类型
+     *
+     * @param dto
+     * @throws EntityNotExistException
+     */
+    void updateExpenseType(UpdateExpenseTypeDTO dto) throws EntityNotExistException;
+
+    /**
+     * 删除支出类型
+     *
+     * @param dto
+     */
+    void deleteExpenseType(DeleteExpenseTypeDTO dto) throws EmptyResultDataAccessException;
 }

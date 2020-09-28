@@ -120,7 +120,7 @@ public class LogApplicationServiceImpl implements LogApplicationService {
         writer.setColumnWidth(2, 22);
         writer.setColumnWidth(3, 10);
         writer.setColumnWidth(4, 10);
-        writer.setColumnWidth(5, 10);
+        writer.setColumnWidth(5, 15);
         writer.flush(outputStream, true);
         IoUtil.close(outputStream);
     }

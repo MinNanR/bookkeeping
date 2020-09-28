@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import site.minnan.bookkeeping.aplication.service.LogApplicationService;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
+import site.minnan.bookkeeping.userinterface.response.ResponseCode;
+import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -50,12 +52,17 @@ public class LogAop {
         String responseString = objectMapper.writeValueAsString(retValue);
         log.info("controller调用{}完成，返回数据:{}，用时{}ms", methodFullName, responseString, time);
         //获取操作类型
-        MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
-        Optional<OperateLog> operateLog =
-                Optional.ofNullable(methodSignature.getMethod().getAnnotation(OperateLog.class));
-        operateLog.ifPresent(log -> {
-            logApplicationService.addLog(log, request);
-        });
+        if (retValue instanceof ResponseEntity){
+            ResponseEntity<?> responseEntity = (ResponseEntity<?>) retValue;
+            if (ResponseCode.SUCCESS.code().equals(responseEntity.getCode())) {
+                MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
+                Optional<OperateLog> operateLog =
+                        Optional.ofNullable(methodSignature.getMethod().getAnnotation(OperateLog.class));
+                operateLog.ifPresent(log -> {
+                    logApplicationService.addLog(log, request);
+                });
+            }
+        }
         return retValue;
     }
 

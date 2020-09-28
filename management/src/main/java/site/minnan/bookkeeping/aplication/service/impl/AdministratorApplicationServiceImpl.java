@@ -20,8 +20,8 @@ import site.minnan.bookkeeping.domain.vo.QueryVO;
 import site.minnan.bookkeeping.domain.vo.auth.AdministratorVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
-import site.minnan.bookkeeping.infrastructure.exception.UserNotExistException;
-import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 import site.minnan.bookkeeping.userinterface.dto.auth.*;
@@ -89,7 +89,7 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      * @param dto
      */
     @Override
-    public void createAdministrator(AddAdministratorDTO dto) throws EntityExistException {
+    public void createAdministrator(AddAdministratorDTO dto) throws EntityAlreadyExistException {
         administratorService.createAdministrator(dto.getUsername(), dto.getPassword(), dto.getNickName());
     }
 
@@ -118,9 +118,9 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      * @param dto
      */
     @Override
-    public void updateAdministrator(UpdateAdministratorDTO dto) throws UserNotExistException {
+    public void updateAdministrator(UpdateAdministratorDTO dto) throws EntityNotExistException {
         Optional<Administrator> administratorInDB = administratorRepository.findById(dto.getId());
-        Administrator administrator = administratorInDB.orElseThrow(UserNotExistException::new);
+        Administrator administrator = administratorInDB.orElseThrow(EntityNotExistException::new);
         Optional<String> nickName = Optional.ofNullable(dto.getNickName());
         administrator.changeInformation(nickName, Optional.empty());
         administratorRepository.save(administrator);
@@ -130,11 +130,11 @@ public class AdministratorApplicationServiceImpl implements AdministratorApplica
      * 修改管理员密码
      *
      * @param dto
-     * @throws UserNotExistException
+     * @throws EntityNotExistException
      * @throws BadCredentialsException
      */
     @Override
-    public void changePassword(UpdatePasswordDTO dto) throws UserNotExistException, BadCredentialsException {
+    public void changePassword(UpdatePasswordDTO dto) throws EntityNotExistException, BadCredentialsException {
         administratorService.changePassword(dto.getId(), dto.getOriginalPassword(), dto.getNewPassword());
     }
 

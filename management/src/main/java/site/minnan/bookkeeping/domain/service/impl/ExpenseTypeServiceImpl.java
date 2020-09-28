@@ -6,7 +6,7 @@ import site.minnan.bookkeeping.domain.entity.ExpenseType;
 import site.minnan.bookkeeping.domain.repository.ExpenseTypeRepository;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.service.ExpenseTypeService;
-import site.minnan.bookkeeping.infrastructure.exception.EntityExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 
 import java.util.Optional;
 
@@ -17,11 +17,11 @@ public class ExpenseTypeServiceImpl implements ExpenseTypeService {
     private ExpenseTypeRepository expenseTypeRepository;
 
     @Override
-    public void addExpenseType(String typeName, Integer userId) throws EntityExistException {
+    public void addExpenseType(String typeName, Integer userId) throws EntityAlreadyExistException {
         Optional<ExpenseType> expenseType = expenseTypeRepository.findOne(SpecificationGenerator.equal("typeName",
                 typeName));
         if (expenseType.isPresent()) {
-            throw new EntityExistException("该名称已存在");
+            throw new EntityAlreadyExistException("该名称已存在");
         }
         ExpenseType newExpenseType = ExpenseType.of(typeName, userId);
         expenseTypeRepository.save(newExpenseType);
