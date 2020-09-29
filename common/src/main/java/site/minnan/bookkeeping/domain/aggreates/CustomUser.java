@@ -4,10 +4,12 @@ import com.google.common.base.Objects;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Getter
-@Table(name = "user")
+@Table(name = "auth_user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
@@ -17,21 +19,24 @@ public class CustomUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "username", length = 50, nullable = false)
+    @Column(name = "username", columnDefinition = "varchar(50) comment '用户名'")
     private String username;
 
-    @Column(name = "password", length = 50, nullable = false)
+    @Column(name = "password", columnDefinition = "varchar(100) comment '密码'")
     private String password;
 
-    @Column(name = "nick_name", length = 50, nullable = false)
+    @Column(name = "nick_name", columnDefinition = "varchar(50) comment '昵称'")
     private String nickName;
 
     @Setter
-    @Column(name = "role", length = 20)
+    @Column(name = "role", length = 20, columnDefinition = "varchar(20) comment '角色'")
     private String role;
 
+    @Column(name = "create_time", columnDefinition = "timestamp comment '创建时间'")
+    private Timestamp createTime;
+
     public static CustomUser of(String username, String password, String nickName, String role) {
-        return new CustomUser(null, username, password, nickName, role);
+        return new CustomUser(null, username, password, nickName, role, Timestamp.from(Instant.now()));
     }
 
     @Override

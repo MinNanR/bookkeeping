@@ -32,10 +32,20 @@ public class UserController {
             manager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
         } catch (DisabledException e) {
             throw new Exception("用户被禁用", e);
-        } catch (BadCredentialsException e){
+        } catch (BadCredentialsException e) {
             throw new Exception(("用户名或密码错误"));
         }
         UserInformationVO vo = userService.getUserInformationByUsername(dto.getUsername());
         return ResponseEntity.success(vo);
     }
+
+    /**
+     * 登录验证码
+     *
+     * @return
+     */
+    public ResponseEntity<?> getVerificationCodeForRegister(LoginDTO dto){
+        return ResponseEntity.success();
+    }
+
 }
