@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import site.minnan.bookkeeping.application.service.UserService;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 
 import javax.servlet.FilterChain;

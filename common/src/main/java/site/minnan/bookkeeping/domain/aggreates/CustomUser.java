@@ -25,9 +25,6 @@ public class CustomUser {
     @Column(name = "password", columnDefinition = "varchar(100) comment '密码'")
     private String password;
 
-    @Column(name = "nick_name", columnDefinition = "varchar(50) comment '昵称'")
-    private String nickName;
-
     @Setter
     @Column(name = "role", length = 20, columnDefinition = "varchar(20) comment '角色'")
     private String role;
@@ -35,8 +32,8 @@ public class CustomUser {
     @Column(name = "create_time", columnDefinition = "timestamp comment '创建时间'")
     private Timestamp createTime;
 
-    public static CustomUser of(String username, String password, String nickName, String role) {
-        return new CustomUser(null, username, password, nickName, role, Timestamp.from(Instant.now()));
+    public static CustomUser of(String username, String password, String role) {
+        return new CustomUser(null, username, password, role, Timestamp.from(Instant.now()));
     }
 
     @Override

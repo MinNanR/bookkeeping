@@ -17,7 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import site.minnan.bookkeeping.application.service.UserService;
+import site.minnan.bookkeeping.application.service.UserApplicationService;
 import site.minnan.bookkeeping.infrastructure.security.JwtRequestFilter;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 
@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserService userService;
+    private UserApplicationService userApplicationService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -45,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userApplicationService).passwordEncoder(passwordEncoder());
     }
 
     @Bean

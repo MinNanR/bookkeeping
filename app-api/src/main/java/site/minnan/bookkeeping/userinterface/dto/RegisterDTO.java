@@ -2,11 +2,10 @@ package site.minnan.bookkeeping.userinterface.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-
 @Data
-public class AddUserDTO {
+public class RegisterDTO {
 
-    @NotBlank
+    private String verificationCode;
+
     private String username;
 }
