@@ -81,7 +81,6 @@ public class UserApplicationServiceImpl implements UserApplicationService {
 
     @Override
     public UserInformationVO getUserInformationByUsername(String username) {
-
         CustomUser user = getUserByUsername(username);
         String token = jwtUtil.generateToken(user);
         return new UserInformationVO(token);
@@ -103,6 +102,6 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         String verificationCode = RandomUtil.randomNumbers(6);
         redisUtil.valueSet(StrUtil.format("registerVerificationCode:{}:{}", dto.getUsername(), verificationCode), 1,
                 Duration.ofMinutes(5));
-        messageUtil.sendMessage(dto.getUsername());
+        messageUtil.sendMessageVerificationCode(dto.getUsername(), verificationCode);
     }
 }

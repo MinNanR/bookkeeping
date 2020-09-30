@@ -1,8 +1,6 @@
 package site.minnan.bookkeeping.infrastructure.utils;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapBuilder;
-import cn.hutool.core.util.RandomUtil;
 import com.aliyuncs.CommonRequest;
 import com.aliyuncs.CommonResponse;
 import com.aliyuncs.DefaultAcsClient;
@@ -14,16 +12,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Component
 @Slf4j
 public class MessageUtil {
-
-    @Autowired
-    private RedisUtil redisUtil;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -35,15 +28,13 @@ public class MessageUtil {
 
     private final String accessKeySecret;
 
-    public MessageUtil() {
-        String accessKeyId = (String) redisUtil.getHashValue("aliyun", "AccessKeyId");
-        String accessKeySecret = (String) redisUtil.getHashValue("alyun", "AccessKeySecret");
+    public MessageUtil(String accessKeyId, String accessKeySecret) {
         this.accessKeyId = accessKeyId;
         this.accessKeySecret = accessKeySecret;
     }
 
-    public void sendMessage(String phoneNumber) throws ClientException, JsonProcessingException {
-        String verificationCode = RandomUtil.randomNumbers(6);
+    public void sendMessageVerificationCode(String phoneNumber, String verificationCode) throws ClientException,
+            JsonProcessingException {
         Map<Object, Object> map = MapBuilder.create().put("code", verificationCode).build();
         String template = objectMapper.writeValueAsString(map);
         DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);

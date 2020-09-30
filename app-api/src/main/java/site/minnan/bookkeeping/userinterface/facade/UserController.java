@@ -13,6 +13,7 @@ import site.minnan.bookkeeping.application.service.UserApplicationService;
 import site.minnan.bookkeeping.domain.vo.auth.UserInformationVO;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateType;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.infrastructure.exception.InvalidVerificationCodeException;
 import site.minnan.bookkeeping.userinterface.dto.AddUserDTO;
 import site.minnan.bookkeeping.userinterface.dto.LoginDTO;
 import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
@@ -50,7 +51,7 @@ public class UserController {
      * @return
      */
     @PostMapping("getVerificationCodeForRegister")
-    public ResponseEntity<?> getVerificationCodeForRegister(@RequestBody AddUserDTO dto){
+    public ResponseEntity<?> getVerificationCodeForRegister(@RequestBody AddUserDTO dto) {
         try {
             userApplicationService.createVerificationCodeForRegister(dto);
             return ResponseEntity.success();
@@ -59,7 +60,21 @@ public class UserController {
         }
     }
 
-    public ResponseEntity<?> register(@RequestBody RegisterDTO dto){
-        return ResponseEntity.success();
+    /**
+     * 创建用户
+     *
+     * @param dto
+     * @return
+     */
+    @PostMapping("register")
+    public ResponseEntity<UserInformationVO> register(@RequestBody RegisterDTO dto) {
+        try {
+            userApplicationService.createUser(dto);
+            UserInformationVO vo =
+                    userApplicationService.getUserInformationByUsername(dto.getUsername());
+            return ResponseEntity.success(vo);
+        } catch (InvalidVerificationCodeException e) {
+            return ResponseEntity.fail(e.getMessage());
+        }
     }
 }
