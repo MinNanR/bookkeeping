@@ -16,7 +16,7 @@ import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 import site.minnan.bookkeeping.infrastructure.annocation.Operation;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
-import site.minnan.bookkeeping.userinterface.dto.DeleteExpenseTypeDTO;
+import site.minnan.bookkeeping.userinterface.dto.expensetype.DeleteExpenseTypeDTO;
 import site.minnan.bookkeeping.userinterface.dto.expensetype.AddExpenseTypeDTO;
 import site.minnan.bookkeeping.userinterface.dto.expensetype.GetExpenseTypeListDTO;
 import site.minnan.bookkeeping.userinterface.dto.expensetype.UpdateExpenseTypeDTO;

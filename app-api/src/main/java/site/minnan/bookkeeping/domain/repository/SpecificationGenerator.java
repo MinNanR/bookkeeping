@@ -12,7 +12,7 @@ public class SpecificationGenerator {
      * @param param
      * @return
      */
-    public static<T> Specification<T> equal(String property, String param) {
+    public static<T> Specification<T> equal(String property, Object param) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(property), param);
     }
 

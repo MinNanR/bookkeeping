@@ -18,6 +18,7 @@ public class ExpenseType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @Column(name = "type_name", columnDefinition = "varchar(50) comment '类型名称'")

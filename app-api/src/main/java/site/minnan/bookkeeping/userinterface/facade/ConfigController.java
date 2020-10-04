@@ -1,0 +1,44 @@
+package site.minnan.bookkeeping.userinterface.facade;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import site.minnan.bookkeeping.application.service.UserConfigApplicationService;
+import site.minnan.bookkeeping.domain.aggreates.Ledger;
+import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
+import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.userinterface.dto.AddLedgerDTO;
+import site.minnan.bookkeeping.userinterface.dto.AddWarehouseDTO;
+import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
+
+@RestController
+@RequestMapping("app/config")
+public class ConfigController {
+
+    @Autowired
+    private UserConfigApplicationService userConfigApplicationService;
+
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PostMapping("addLedger")
+    public ResponseEntity<?> createLedger(@RequestBody AddLedgerDTO dto) {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        dto.setUserId(jwtUser.getId());
+        userConfigApplicationService.createLedger(dto);
+        return ResponseEntity.success();
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PostMapping("addWarehouse")
+    public ResponseEntity<?> createWarehouse(@RequestBody AddWarehouseDTO dto){
+        try {
+            userConfigApplicationService.createWarehouse(dto);
+            return ResponseEntity.success();
+        } catch (EntityAlreadyExistException e) {
+            return ResponseEntity.fail(e.getMessage());
+        }
+    }
+}

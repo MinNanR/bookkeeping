@@ -18,7 +18,7 @@ public interface UserApplicationService extends UserDetailsService {
      * @param user
      * @return
      */
-    void createUser(RegisterDTO user) throws InvalidVerificationCodeException;
+    void createUser(RegisterDTO user) throws InvalidVerificationCodeException, EntityAlreadyExistException;
 
     /**
      * 获取用户信息

@@ -55,13 +55,18 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     }
 
     @Override
-    public void createUser(RegisterDTO dto) throws InvalidVerificationCodeException {
+    public void createUser(RegisterDTO dto) throws InvalidVerificationCodeException, EntityAlreadyExistException {
         String key = redisUtil.scanOne(StrUtil.format("registerVerificationCode:{}:{}", dto.getUsername(),
                 dto.getVerificationCode()));
         if (key == null) {
             throw new InvalidVerificationCodeException("验证码错误");
         }
-        String password = StrUtil.sub(dto.getUsername(), -7, -1);
+        Optional<CustomUser> userInDB = userRepository.findOne(SpecificationGenerator.equal("username",
+                dto.getUsername()));
+        if (userInDB.isPresent()) {
+            throw new EntityAlreadyExistException("用户名已存在");
+        }
+        String password = StrUtil.sub(dto.getUsername(), 5 ,11);
         password = passwordEncoder.encode(password);
         CustomUser newUser = CustomUser.of(dto.getUsername(), password, "USER");
         userRepository.save(newUser);

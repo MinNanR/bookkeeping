@@ -73,7 +73,7 @@ public class UserController {
             UserInformationVO vo =
                     userApplicationService.getUserInformationByUsername(dto.getUsername());
             return ResponseEntity.success(vo);
-        } catch (InvalidVerificationCodeException e) {
+        } catch (InvalidVerificationCodeException | EntityAlreadyExistException e) {
             return ResponseEntity.fail(e.getMessage());
         }
     }

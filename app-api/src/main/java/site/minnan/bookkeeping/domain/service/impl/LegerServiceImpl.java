@@ -1,0 +1,20 @@
+package site.minnan.bookkeeping.domain.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import site.minnan.bookkeeping.domain.aggreates.Ledger;
+import site.minnan.bookkeeping.domain.repository.LedgerRepository;
+import site.minnan.bookkeeping.domain.service.LedgerService;
+
+@Service
+public class LegerServiceImpl implements LedgerService {
+
+    @Autowired
+    private LedgerRepository ledgerRepository;
+
+    @Override
+    public void addLedger(String ledgerName, Integer userId) {
+        Ledger ledger = Ledger.of(ledgerName, userId);
+        ledgerRepository.save(ledger);
+    }
+}
