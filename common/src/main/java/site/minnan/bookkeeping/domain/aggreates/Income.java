@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.minnan.bookkeeping.domain.entity.IncomeType;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -33,8 +34,8 @@ public class Income extends Journal {
     @Column(name = "income_type_id", columnDefinition = "int comment '收入类型id'")
     private Integer incomeTypeId;
 
-    public Income of(Integer warehouseId, BigDecimal amount) {
-        return new Income(null, warehouseId, amount, Timestamp.from(Instant.now()), 0);
+    public Income of(Integer warehouseId, IncomeType incomeType, BigDecimal amount) {
+        return new Income(null, warehouseId, amount, Timestamp.from(Instant.now()), incomeType.getId());
     }
 
     @Override

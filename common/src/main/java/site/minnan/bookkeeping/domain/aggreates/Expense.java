@@ -28,6 +28,9 @@ public class Expense extends Journal {
     @Column(name = "warehouse_id", columnDefinition = "int comment '金库id'")
     private Integer warehouseId;
 
+    @Column(name = "ledger_id", columnDefinition = "int comment '账本id'")
+    private Integer ledgerId;
+
     @Column(name = "amount", columnDefinition = "decimal(11, 2) comment '数量'")
     private BigDecimal amount;
 
@@ -37,8 +40,12 @@ public class Expense extends Journal {
     @Column(name = "expense_type_id", columnDefinition = "int comment '支出类型id'")
     private Integer expenseTypeId;
 
-    public static Expense of(Integer warehouseId, BigDecimal amount, ExpenseType expenseType) {
-        return new Expense(null, warehouseId, amount, Timestamp.from(Instant.now()), expenseType.getId());
+    @Column(name = "remark", columnDefinition = "text comment '备注'")
+    private String remark;
+
+    public static Expense of(Integer warehouseId, Integer ledgerId, BigDecimal amount, ExpenseType expenseType,
+                             Timestamp createTime,String remark) {
+        return new Expense(null, warehouseId, ledgerId, amount, createTime, expenseType.getId(), remark);
     }
 
     @Override

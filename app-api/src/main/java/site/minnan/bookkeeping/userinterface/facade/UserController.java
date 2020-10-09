@@ -4,19 +4,24 @@ import com.aliyuncs.exceptions.ClientException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import site.minnan.bookkeeping.application.service.UserApplicationService;
+import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.domain.vo.auth.UserInformationVO;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateType;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.InvalidVerificationCodeException;
 import site.minnan.bookkeeping.userinterface.dto.AddUserDTO;
 import site.minnan.bookkeeping.userinterface.dto.LoginDTO;
 import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
+import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 @Slf4j
@@ -75,6 +80,19 @@ public class UserController {
             return ResponseEntity.success(vo);
         } catch (InvalidVerificationCodeException | EntityAlreadyExistException e) {
             return ResponseEntity.fail(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PostMapping("updateUserInformation")
+    public ResponseEntity<?> updateUserInformation(@RequestBody UpdateUserInformationDTO dto){
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        dto.setUserId(jwtUser.getId());
+        try {
+            userApplicationService.updateUserInformation(dto);
+            return ResponseEntity.success();
+        } catch (EntityNotExistException e) {
+            return ResponseEntity.fail("用户不存在");
         }
     }
 }

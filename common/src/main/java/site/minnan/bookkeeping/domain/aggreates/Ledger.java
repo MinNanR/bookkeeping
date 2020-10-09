@@ -1,5 +1,7 @@
 package site.minnan.bookkeeping.domain.aggreates;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,8 +23,8 @@ public class Ledger {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "user_id", columnDefinition = "int comment '用户id'")
-    private Integer userId;
+    @Column(name = "account_id", columnDefinition = "int comment '账户id'")
+    private Integer accountId;
 
     @Column(name = "ledger_name", columnDefinition = "varchar(20) comment '账本名称'")
     private String ledgerName;
@@ -30,40 +32,41 @@ public class Ledger {
     @Column(name = "total_balance", columnDefinition = "decimal(11, 2) comment '账本总余额'")
     private BigDecimal totalBalance;
 
-    @Column(name = "saving_goals", columnDefinition = "decimal(11, 2) comment '存钱目标'")
-    private BigDecimal savingGoals;
-
     @Column(name = "budget", columnDefinition = "decimal(11, 2) comment '花销预算'")
     private BigDecimal budget;
 
-    @Column(name = "cost", columnDefinition = "decimal(11, 2) comment '花销总额'")
-    private BigDecimal cost;
+    @Column(name = "total_expense", columnDefinition = "decimal(11, 2) comment '花销总额'")
+    private BigDecimal totalExpense;
 
-    @Column(name = "earn", columnDefinition = "decimal(11, 2) comment '收入总额'")
-    private BigDecimal earn;
+    @Column(name = "total_income", columnDefinition = "decimal(11, 2) comment '收入总额'")
+    private BigDecimal totalIncome;
+
+    @Column(name = "year", columnDefinition = "int comment '所属年份'")
+    private Integer year;
+
+    @Column(name = "month", columnDefinition = "int comment '所属月份'")
+    private Integer month;
 
     @Transient
-    private List<Warehouse> warehouseList;
+    private List<Journal> journalList;
 
-    private Ledger(String ledgerName, Integer userId) {
-        this.ledgerName = ledgerName;
-        this.userId = userId;
+    public Ledger(Integer accountId){
+        this.accountId = accountId;
+        this.totalExpense = BigDecimal.ZERO;
+        this.totalIncome = BigDecimal.ZERO;
         this.totalBalance = BigDecimal.ZERO;
-        this.earn = BigDecimal.ZERO;
-        this.cost = BigDecimal.ZERO;
-    }
-
-    public static Ledger of(String ledgerName, Integer userId) {
-        return new Ledger(ledgerName, userId);
+        this.year = DateUtil.thisYear();
+        this.month = DateUtil.thisMonth();
+        this.ledgerName = StrUtil.format("{}年{}月账本", this.year, this.month);
     }
 
     public void cost(Expense expense) {
-        cost = cost.add(expense.getAmount());
+        totalExpense = totalExpense.add(expense.getAmount());
         totalBalance = totalBalance.add(expense.calculate());
     }
 
     public void earn(Income income) {
-        earn = earn.add(income.getAmount());
+        totalIncome = totalIncome.add(income.getAmount());
         totalBalance = totalBalance.add(income.calculate());
     }
 }

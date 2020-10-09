@@ -35,22 +35,31 @@ package auth{
     }
 }
 
-package ledger{
-    class Ledger{
+package account{
+    class Account{
     Integer id
     Integer userId
+    BigDecimal totalBalance
+    Date wageDay
+    List<Warehouse> warehouseList
+    List<Journal> journalList
+    }
+
+    class Ledger{
+    Integer id
+    Integer accountId
     String ledgerName
-    List<ExpenseType> expenseTypeList
-    List<IncomeType> incomeTypeList
-    void addWarehouse()
+    BigDecimal budget
+    BigDecimal totalIncome
+    BigDecimal totalExpense
+    List<Journal> journalList
     }
 
     abstract class Warehouse{
     Integer id
     String warehouseName
     Double balance
-    Integer ledgerId
-    void addJournal(Journal)
+    Integer accountId
     }
 
     class Currency{
@@ -62,6 +71,7 @@ package ledger{
     abstract class Journal{
     Integer id
     Integer warehouseId
+    Integer ledgerId
     Double amount
     Timestamp createTime
     }
@@ -87,23 +97,19 @@ package ledger{
     class InvestmentWarehouse
     class VaultWarehouse
 
-    Warehouse <|-- InvestmentWarehouse
-    Warehouse <|-- VaultWarehouse
-    Ledger <-- Warehouse
-    Warehouse <-- Currency
-    Warehouse *-- Journal
+    Account <-- Ledger
+    Account <-- Warehouse
+    Account <-- Journal
     Journal <|-- Expense
     Journal <|-- Income
-    Ledger *-- ExpenseType
-    Ledger *-- IncomeType
-    ExpenseType *-- ExpenseType
-    IncomeType *-- IncomeType
     Expense <-- ExpenseType
     Income <-- IncomeType
-
+    Warehouse --* Currency
+    User <|-- Account
+    Warehouse <|-- VaultWarehouse
+    Warehouse <|-- InvestmentWarehouse
 }
 
-User <-- Ledger
 @enduml
 
 @startuml

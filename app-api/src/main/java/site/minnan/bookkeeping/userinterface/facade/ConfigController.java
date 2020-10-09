@@ -13,7 +13,10 @@ import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.bookkeeping.userinterface.dto.AddLedgerDTO;
 import site.minnan.bookkeeping.userinterface.dto.AddWarehouseDTO;
+import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("app/config")
@@ -22,18 +25,12 @@ public class ConfigController {
     @Autowired
     private UserConfigApplicationService userConfigApplicationService;
 
-    @PreAuthorize("hasAnyAuthority('USER')")
-    @PostMapping("addLedger")
-    public ResponseEntity<?> createLedger(@RequestBody AddLedgerDTO dto) {
-        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        dto.setUserId(jwtUser.getId());
-        userConfigApplicationService.createLedger(dto);
-        return ResponseEntity.success();
-    }
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping("addWarehouse")
-    public ResponseEntity<?> createWarehouse(@RequestBody AddWarehouseDTO dto){
+    public ResponseEntity<?> createWarehouse(@RequestBody @Valid AddWarehouseDTO dto){
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        dto.setUserId(jwtUser.getId());
         try {
             userConfigApplicationService.createWarehouse(dto);
             return ResponseEntity.success();
@@ -41,4 +38,5 @@ public class ConfigController {
             return ResponseEntity.fail(e.getMessage());
         }
     }
+
 }

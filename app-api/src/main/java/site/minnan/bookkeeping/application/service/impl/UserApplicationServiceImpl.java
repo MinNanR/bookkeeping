@@ -10,18 +10,23 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.application.service.UserApplicationService;
+import site.minnan.bookkeeping.domain.aggreates.Account;
 import site.minnan.bookkeeping.domain.aggreates.CustomUser;
+import site.minnan.bookkeeping.domain.repository.AccountRepository;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.repository.UserRepository;
+import site.minnan.bookkeeping.domain.service.LedgerService;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.domain.vo.auth.UserInformationVO;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.InvalidVerificationCodeException;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.MessageUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 import site.minnan.bookkeeping.userinterface.dto.AddUserDTO;
 import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
+import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -40,6 +45,12 @@ public class UserApplicationServiceImpl implements UserApplicationService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private LedgerService ledgerService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -69,7 +80,10 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         String password = StrUtil.sub(dto.getUsername(), 5 ,11);
         password = passwordEncoder.encode(password);
         CustomUser newUser = CustomUser.of(dto.getUsername(), password, "USER");
-        userRepository.save(newUser);
+        CustomUser savedUser = userRepository.save(newUser);
+        Account account = Account.of(savedUser.getId());
+        Account savedAccount = accountRepository.save(account);
+        ledgerService.createLedger(savedAccount.getId());
     }
 
     private CustomUser getUserByUsername(String username) {
@@ -87,7 +101,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public UserInformationVO getUserInformationByUsername(String username) {
         CustomUser user = getUserByUsername(username);
-        String token = jwtUtil.generateToken(user);
+        String token = StrUtil.format("Bearer {}", jwtUtil.generateToken(user));
         return new UserInformationVO(token);
     }
 
@@ -108,5 +122,19 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         redisUtil.valueSet(StrUtil.format("registerVerificationCode:{}:{}", dto.getUsername(), verificationCode), 1,
                 Duration.ofMinutes(5));
         messageUtil.sendMessageVerificationCode(dto.getUsername(), verificationCode);
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param dto
+     */
+    @Override
+    public void updateUserInformation(UpdateUserInformationDTO dto) throws EntityNotExistException {
+        Optional<CustomUser> userOptional = userRepository.findById(dto.getUserId());
+        CustomUser user = userOptional.orElseThrow(() -> new EntityNotExistException("用户不存在"));
+        user.changeName(Optional.ofNullable(dto.getNickName()));
+        user.changeUserType(Optional.ofNullable(dto.getUserType()));
+        userRepository.save(user);
     }
 }

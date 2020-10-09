@@ -2,10 +2,12 @@ package site.minnan.bookkeeping.domain.aggreates;
 
 import com.google.common.base.Objects;
 import lombok.*;
+import site.minnan.bookkeeping.domain.entity.UserType;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -32,8 +34,24 @@ public class CustomUser {
     @Column(name = "create_time", columnDefinition = "timestamp comment '创建时间'")
     private Timestamp createTime;
 
+    @Convert(converter = UserType.UserTypeConverter.class)
+    @Column(name = "user_type")
+    private UserType userType;
+
+    @Column(name = "nick_name", columnDefinition = "varchar(50) comment '昵称'")
+    private String nickName;
+
     public static CustomUser of(String username, String password, String role) {
-        return new CustomUser(null, username, password, role, Timestamp.from(Instant.now()));
+        return new CustomUser(null, username, password, role, Timestamp.from(Instant.now()), null,
+                username);
+    }
+
+    public void changeName(Optional<String> nickName) {
+        this.nickName = nickName.orElse(this.nickName);
+    }
+
+    public void changeUserType(Optional<String> userType) {
+        this.userType = userType.map(UserType::valueOf).orElse(this.userType);
     }
 
     @Override

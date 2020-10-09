@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class AddWarehouseDTO {
 
-    @NotNull
-    Integer ledgerId;
+    Integer userId;
 
     @NotBlank
     String warehouseName;

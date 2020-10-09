@@ -19,17 +19,18 @@ public class WarehouseServiceImpl implements WarehouseService {
     WarehouseRepository warehouseRepository;
 
     @Override
-    public void createWarehouse(Integer ledgerId, String warehouseName, Optional<BigDecimal> balance) throws EntityAlreadyExistException {
+    public Warehouse createWarehouse(Integer accountId, String warehouseName, Optional<BigDecimal> balance) throws EntityAlreadyExistException {
         Optional<Warehouse> check = warehouseRepository.findOne((root, criteriaQuery, criteriaBuilder) -> {
             Predicate conjunction = criteriaBuilder.conjunction();
-            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("ledgerId"), ledgerId));
+            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("accountId"), accountId));
             conjunction.getExpressions().add(criteriaBuilder.equal(root.get("warehouseName"), warehouseName));
             return conjunction;
         });
         if (check.isPresent()) {
             throw new EntityAlreadyExistException("同名金库已存在");
         }
-        Warehouse warehouse = Warehouse.of(warehouseName, balance.orElse(BigDecimal.ZERO), ledgerId);
-        warehouseRepository.save(warehouse);
+        Warehouse warehouse = Warehouse.of(warehouseName, balance.orElse(BigDecimal.ZERO), accountId);
+        return warehouseRepository.save(warehouse);
+
     }
 }

@@ -23,7 +23,7 @@ server:
 jwt:
   route:
     authentication:
-      path: /app/auth/**
+      path: /app/auth/login, /app/auth/getVerificationCodeForRegister, /app/auth/register
   header: Authorization
   expiration: 604800
   scret: min107
@@ -31,3 +31,14 @@ jwt:
 aliyun:
   bucketName: link-server
   baseUrl: http://minnan.site:2000
+
+logging:
+  level:
+    org.springframework.security:
+      - debug
+      - info
+    org.springframework.web: error
+    org.hibernate.SQL: debug
+    org.hibernate.engine.QueryParameters: debug
+    org.hibernate.engine.query.HQLQueryPlan: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace

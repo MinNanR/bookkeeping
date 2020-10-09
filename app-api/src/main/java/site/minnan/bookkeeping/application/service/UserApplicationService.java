@@ -6,9 +6,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import site.minnan.bookkeeping.domain.aggreates.CustomUser;
 import site.minnan.bookkeeping.domain.vo.auth.UserInformationVO;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.InvalidVerificationCodeException;
 import site.minnan.bookkeeping.userinterface.dto.AddUserDTO;
 import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
+import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
 
 public interface UserApplicationService extends UserDetailsService {
 
@@ -35,4 +37,10 @@ public interface UserApplicationService extends UserDetailsService {
      * @param dto
      */
     void createVerificationCodeForRegister(AddUserDTO dto) throws EntityAlreadyExistException, ClientException, JsonProcessingException;
+
+    /**
+     * 更新用户信息
+     * @param dto
+     */
+    void updateUserInformation(UpdateUserInformationDTO dto) throws EntityNotExistException;
 }

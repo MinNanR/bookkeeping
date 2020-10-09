@@ -12,9 +12,14 @@ public class LegerServiceImpl implements LedgerService {
     @Autowired
     private LedgerRepository ledgerRepository;
 
+    /**
+     * 创建账本
+     *
+     * @param accountId
+     * @return
+     */
     @Override
-    public void addLedger(String ledgerName, Integer userId) {
-        Ledger ledger = Ledger.of(ledgerName, userId);
-        ledgerRepository.save(ledger);
+    public Ledger createLedger(Integer accountId) {
+        return ledgerRepository.save(new Ledger(accountId));
     }
 }
