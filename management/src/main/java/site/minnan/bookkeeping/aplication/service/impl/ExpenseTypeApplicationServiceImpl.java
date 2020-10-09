@@ -76,13 +76,11 @@ public class ExpenseTypeApplicationServiceImpl implements ExpenseTypeApplication
      *
      * @param dto
      * @throws EntityNotExistException
+     * @throws EntityNotExistException 找不到id对应的支出类型
      */
     @Override
-    public void updateExpenseType(UpdateExpenseTypeDTO dto) throws EntityNotExistException {
-        Optional<ExpenseType> expenseTypeInDB = expenseTypeRepository.findById(dto.getId());
-        ExpenseType expenseType = expenseTypeInDB.orElseThrow(EntityNotExistException::new);
-        expenseType.changeTypeName(dto.getTypeName(), dto.getUserId());
-        expenseTypeRepository.save(expenseType);
+    public void updateExpenseType(UpdateExpenseTypeDTO dto) throws EntityNotExistException, EntityAlreadyExistException {
+        expenseTypeService.changeExpenseTypeName(dto.getId(), dto.getTypeName(), dto.getUserId());
     }
 
     /**

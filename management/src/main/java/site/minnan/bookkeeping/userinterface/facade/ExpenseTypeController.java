@@ -52,20 +52,20 @@ public class ExpenseTypeController {
     }
 
     /**
-     * 获取支付类型
+     * 获取支出类型
      *
      * @param dto
      * @return
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("getExpenseTypeList")
-    public ResponseEntity<QueryVO<ExpenseTypeVO>> getExpenseTypeList(@RequestBody @Valid GetExpenseTypeListDTO dto) {
+    public ResponseEntity<QueryVO<ExpenseTypeVO>> getExpenseTypeList(@RequestBody GetExpenseTypeListDTO dto) {
         QueryVO<ExpenseTypeVO> expenseTypeList = expenseTypeApplicationService.getExpenseTypeList(dto);
         return ResponseEntity.success(expenseTypeList);
     }
 
     /**
-     * 修改支付类型
+     * 修改支出类型
      *
      * @param dto
      * @return
@@ -79,11 +79,12 @@ public class ExpenseTypeController {
         try {
             expenseTypeApplicationService.updateExpenseType(dto);
             return ResponseEntity.success();
-        } catch (EntityNotExistException e) {
-            return ResponseEntity.fail("该id支付类型不存在");
+        } catch (EntityNotExistException | EntityAlreadyExistException e) {
+            return ResponseEntity.fail(e.getMessage());
         }
     }
 
+    
     @OperateLog(operation = Operation.DELETE, module = "支出类型", content = "删除支出类型")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("deleteExpenseType")
@@ -92,7 +93,7 @@ public class ExpenseTypeController {
             expenseTypeApplicationService.deleteExpenseType(dto);
             return ResponseEntity.success();
         } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.fail("该id支付类型不存在");
+            return ResponseEntity.fail("该id支出类型不存在");
         }
     }
 }

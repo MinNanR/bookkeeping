@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class AddExpenseDTO {
+public class AddExpenseDTO{
 
     private Integer warehouseId;
 

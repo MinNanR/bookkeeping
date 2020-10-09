@@ -33,8 +33,9 @@ public interface ExpenseTypeApplicationService {
      *
      * @param dto
      * @throws EntityNotExistException
+     * @throws EntityNotExistException 找不到id对应的支出类型
      */
-    void updateExpenseType(UpdateExpenseTypeDTO dto) throws EntityNotExistException;
+    void updateExpenseType(UpdateExpenseTypeDTO dto) throws EntityNotExistException, EntityAlreadyExistException;
 
     /**
      * 删除支出类型
