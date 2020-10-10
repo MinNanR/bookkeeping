@@ -52,4 +52,20 @@ public class Expense extends Journal {
     public BigDecimal calculate() {
         return amount.abs().negate();
     }
+
+    public void changeExpenseType(ExpenseType expenseType){
+        this.expenseTypeId = expenseType.getId();
+    }
+
+    public void changeCreateTime(Timestamp createTime){
+        this.createTime = createTime;
+    }
+
+    public void changeAmount(BigDecimal amount){
+        this.amount = amount;
+    }
+
+    public void changeWarehouse(Warehouse warehouse){
+        this.warehouseId = warehouse.getId();
+    }
 }

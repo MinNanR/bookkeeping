@@ -69,4 +69,9 @@ public class Ledger {
         totalIncome = totalIncome.add(income.getAmount());
         totalBalance = totalBalance.add(income.calculate());
     }
+
+    public void modifyCost(BigDecimal originalAmount, BigDecimal targetAmount){
+        totalBalance = totalBalance.add(originalAmount.subtract(targetAmount));
+        totalExpense = totalExpense.subtract(originalAmount.subtract(targetAmount));
+    }
 }

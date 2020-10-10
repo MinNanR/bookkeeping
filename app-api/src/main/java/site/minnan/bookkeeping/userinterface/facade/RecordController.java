@@ -10,6 +10,7 @@ import site.minnan.bookkeeping.application.service.RecordService;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.userinterface.dto.AddExpenseDTO;
 import site.minnan.bookkeeping.userinterface.dto.AddIncomeDTO;
+import site.minnan.bookkeeping.userinterface.dto.ModifyExpenseDTO;
 import site.minnan.bookkeeping.userinterface.dto.UpdateExpenseDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
@@ -42,5 +43,9 @@ public class RecordController {
         } catch (EntityNotExistException e) {
             return ResponseEntity.fail(e.getMessage());
         }
+    }
+
+    public void modifyExpense(ModifyExpenseDTO dto){
+
     }
 }

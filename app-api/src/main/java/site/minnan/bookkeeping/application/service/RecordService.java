@@ -3,6 +3,7 @@ package site.minnan.bookkeeping.application.service;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.userinterface.dto.AddExpenseDTO;
 import site.minnan.bookkeeping.userinterface.dto.AddIncomeDTO;
+import site.minnan.bookkeeping.userinterface.dto.ModifyExpenseDTO;
 
 public interface RecordService {
 
@@ -21,4 +22,12 @@ public interface RecordService {
      * @throws EntityNotExistException
      */
     void addIncome(AddIncomeDTO dto) throws EntityNotExistException;
+
+    /**
+     * 修改支出记录
+     *
+     * @param dto
+     * @throws EntityNotExistException
+     */
+    void modifyExpense(ModifyExpenseDTO dto) throws EntityNotExistException;
 }

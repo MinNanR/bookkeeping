@@ -45,4 +45,15 @@ public class Warehouse {
         this.balance = this.balance.add(journal.calculate());
     }
 
+    public void removeExpense(BigDecimal amount){
+        balance = balance.add(amount);
+    }
+
+    public void removeIncome(BigDecimal amount){
+        balance = balance.subtract(amount);
+    }
+
+    public void modifyExpense(Expense expense, BigDecimal amount){
+        this.balance = balance.add(expense.getAmount().subtract(amount));
+    }
 }

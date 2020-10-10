@@ -1,8 +1,10 @@
 package site.minnan.bookkeeping.application.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import com.fasterxml.jackson.databind.ser.BeanSerializerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.SerializationUtils;
 import site.minnan.bookkeeping.application.service.RecordService;
 import site.minnan.bookkeeping.domain.aggreates.*;
 import site.minnan.bookkeeping.domain.entity.ExpenseType;
@@ -12,8 +14,13 @@ import site.minnan.bookkeeping.domain.service.LedgerService;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.userinterface.dto.AddExpenseDTO;
 import site.minnan.bookkeeping.userinterface.dto.AddIncomeDTO;
+import site.minnan.bookkeeping.userinterface.dto.ModifyExpenseDTO;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.criteria.Predicate;
+import java.lang.invoke.SerializedLambda;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @Service
@@ -113,4 +120,72 @@ public class RecordServiceImpl implements RecordService {
         warehouseRepository.save(warehouse);
         incomeRepository.save(income);
     }
+
+    /**
+     * 修改支出记录
+     *
+     * @param dto
+     * @throws EntityNotExistException
+     */
+    @Override
+    public void modifyExpense(ModifyExpenseDTO dto) throws EntityNotExistException {
+        //从仓库中获取支出记录
+        Optional<Expense> expenseOptional = expenseRepository.findById(dto.getId());
+        Expense expense = expenseOptional.orElseThrow(() -> new EntityNotExistException("支出记录不存在"));
+        //修改支出类型
+        Optional.ofNullable(dto.getExpenseTypeId()).ifPresent(expenseTypeId -> {
+            Optional<ExpenseType> expenseTypeOptional = expenseTypeRepository.findById(expenseTypeId);
+            ExpenseType expenseType = expenseTypeOptional.orElseThrow(() -> new EntityExistsException("支出类型不存在"));
+            expense.changeExpenseType(expenseType);
+        });
+        //修改创建时间
+        Optional.ofNullable(dto.getCreatTime()).ifPresent(expense::changeCreateTime);
+        Optional<BigDecimal> amountOptional = Optional.ofNullable(dto.getAmount());
+        if (amountOptional.isPresent() && amountOptional.get().compareTo(expense.getAmount()) != 0) {
+            BigDecimal targetAmount = amountOptional.get();
+            BigDecimal originalAmount = expense.getAmount();
+            //修改仓库
+            Warehouse originalWarehouse = warehouseRepository.findById(expense.getWarehouseId()).get();
+            Optional<Integer> warehouseIdOptional = Optional.ofNullable(dto.getWarehouseId());
+            if (warehouseIdOptional.isPresent()) {
+                Integer warehouseId = warehouseIdOptional.get();
+                Warehouse targetWarehouse =
+                        warehouseRepository.findById(warehouseId).orElseThrow(() -> new EntityExistsException("金库不存在"));
+                //修改支出金额
+                expense.changeAmount(targetAmount);
+                //转移金库
+                originalWarehouse.removeExpense(originalAmount);
+                targetWarehouse.settle(expense);
+                warehouseRepository.save(originalWarehouse);
+                warehouseRepository.save(targetWarehouse);
+                expense.changeWarehouse(targetWarehouse);
+            } else {
+                originalWarehouse.modifyExpense(expense, targetAmount);
+                expense.changeAmount(targetAmount);
+                warehouseRepository.save(originalWarehouse);
+            }
+            Account account = accountRepository.findById(originalWarehouse.getAccountId()).get();
+            account.changeExpense(originalAmount, targetAmount);
+            accountRepository.save(account);
+            Ledger ledger = ledgerRepository.findById(expense.getLedgerId()).get();
+            ledger.modifyCost(originalAmount, targetAmount);
+            ledgerRepository.save(ledger);
+        } else {
+            Warehouse originalWarehouse = warehouseRepository.findById(expense.getWarehouseId()).get();
+            Optional<Integer> warehouseIdOptional = Optional.ofNullable(dto.getWarehouseId());
+            if (warehouseIdOptional.isPresent()) {
+                Integer warehouseId = warehouseIdOptional.get();
+                Warehouse targetWarehouse =
+                        warehouseRepository.findById(warehouseId).orElseThrow(() -> new EntityExistsException("金库不存在"));
+                //转移金库
+                originalWarehouse.removeExpense(expense.getAmount());
+                targetWarehouse.settle(expense);
+                warehouseRepository.save(originalWarehouse);
+                warehouseRepository.save(targetWarehouse);
+                expense.changeWarehouse(targetWarehouse);
+            }
+        }
+        expenseRepository.save(expense);
+    }
+
 }
