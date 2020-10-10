@@ -67,13 +67,13 @@ public class LogApplicationServiceImpl implements LogApplicationService {
     @Override
     public QueryVO<LogVO> getLogList(GetLogListDTO dto) {
         Optional<String> usernameOptional = Optional.ofNullable(dto.getUsername());
-        Optional<String> operationOptional = Optional.ofNullable(dto.getOperation());
+        Optional<Operation> operationOptional = Optional.ofNullable(dto.getOperation());
         Page<Log> logPage = logRepository.findAll((root, query, criteriaBuilder) -> {
             Predicate conjunction = criteriaBuilder.conjunction();
             String username = StrUtil.format("%{}%", usernameOptional.orElse(""));
             conjunction.getExpressions().add(criteriaBuilder.like(root.get("username"), username));
             operationOptional.ifPresent(operation ->
-                    conjunction.getExpressions().add(criteriaBuilder.equal(root.get("operation"), operation)));
+                    conjunction.getExpressions().add(criteriaBuilder.equal(root.get("operation"), operation.operationName())));
             return conjunction;
         }, PageRequest.of(dto.getPageIndex() - 1, dto.getPageSize(), Sort.by(Sort.Direction.DESC, "createTime")));
 
@@ -92,13 +92,13 @@ public class LogApplicationServiceImpl implements LogApplicationService {
     @Override
     public void downloadLogList(DownloadLogDTO dto, OutputStream outputStream) {
         Optional<String> usernameOptional = Optional.ofNullable(dto.getUsername());
-        Optional<String> operationOptional = Optional.ofNullable(dto.getOperation());
+        Optional<Operation> operationOptional = Optional.ofNullable(dto.getOperation());
         List<Log> logList = logRepository.findAll((root, query, criteriaBuilder) -> {
             Predicate conjunction = criteriaBuilder.conjunction();
             String username = StrUtil.format("%{}%", usernameOptional.orElse(""));
             conjunction.getExpressions().add(criteriaBuilder.like(root.get("username"), username));
             operationOptional.ifPresent(operation ->
-                    conjunction.getExpressions().add(criteriaBuilder.equal(root.get("operation"), operation)));
+                    conjunction.getExpressions().add(criteriaBuilder.equal(root.get("operation"), operation.operationName())));
             return conjunction;
         });
         List<Map<String, Object>> data = logList.stream()

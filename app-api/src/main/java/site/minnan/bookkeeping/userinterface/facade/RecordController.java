@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import site.minnan.bookkeeping.application.service.RecordService;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.userinterface.dto.AddExpenseDTO;
+import site.minnan.bookkeeping.userinterface.dto.AddIncomeDTO;
+import site.minnan.bookkeeping.userinterface.dto.UpdateExpenseDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.validation.Valid;
@@ -25,6 +27,17 @@ public class RecordController {
     public ResponseEntity<?> addExpense(@RequestBody @Valid AddExpenseDTO dto){
         try {
             recordService.addExpense(dto);
+            return ResponseEntity.success();
+        } catch (EntityNotExistException e) {
+            return ResponseEntity.fail(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PostMapping("addIncome")
+    public ResponseEntity<?> addIncome(@RequestBody @Valid AddIncomeDTO dto){
+        try {
+            recordService.addIncome(dto);
             return ResponseEntity.success();
         } catch (EntityNotExistException e) {
             return ResponseEntity.fail(e.getMessage());

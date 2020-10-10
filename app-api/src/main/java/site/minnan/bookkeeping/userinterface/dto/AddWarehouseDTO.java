@@ -11,7 +11,7 @@ public class AddWarehouseDTO {
 
     Integer userId;
 
-    @NotBlank
+    @NotBlank(message = "名称不能为空")
     String warehouseName;
 
     BigDecimal balance;

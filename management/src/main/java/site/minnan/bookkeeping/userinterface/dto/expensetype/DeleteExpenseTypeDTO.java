@@ -7,6 +7,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DeleteExpenseTypeDTO {
 
-    @NotNull
+    @NotNull(message = "未指定删除的支出类型id")
     private Integer id;
 }

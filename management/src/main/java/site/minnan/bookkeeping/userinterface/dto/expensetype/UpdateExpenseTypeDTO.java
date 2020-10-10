@@ -10,9 +10,9 @@ public class UpdateExpenseTypeDTO {
 
     private Integer userId;
 
-    @NotNull
+    @NotNull(message = "未指定要修改的支出类型id")
     private Integer id;
 
-    @NotBlank
+    @NotBlank(message = "新名称不能为空")
     private String typeName;
 }

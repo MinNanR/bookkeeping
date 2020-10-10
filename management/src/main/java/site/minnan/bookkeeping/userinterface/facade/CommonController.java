@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import site.minnan.bookkeeping.domain.entity.UserType;
 import site.minnan.bookkeeping.infrastructure.annocation.Operation;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
@@ -26,8 +27,18 @@ public class CommonController {
     @PostMapping("getLogOperation")
     public ResponseEntity<Map<Object, Object>> getLogOperation() {
         Operation[] operations = Operation.values();
-        List<String> operationStringList =
-                Arrays.stream(operations).map(Operation::operationName).collect(Collectors.toList());
-        return ResponseEntity.success(MapBuilder.create().put("list", operationStringList).build());
+        List<Map<Object, Object>> list = Arrays.stream(operations)
+                .map(value -> MapBuilder.create().put("key", value.name()).put("value", value.operationName()).build())
+                .collect(Collectors.toList());
+        return ResponseEntity.success(MapBuilder.create().put("list", list).build());
+    }
+
+    @PostMapping("getUserType")
+    public ResponseEntity<Map<Object, Object>> getUserType() {
+        UserType[] values = UserType.values();
+        List<Map<Object, Object>> list = Arrays.stream(values)
+                .map(value -> MapBuilder.create().put("key", value.name()).put("value", value.typeName()).build())
+                .collect(Collectors.toList());
+        return ResponseEntity.success(MapBuilder.create().put("list", list).build());
     }
 }

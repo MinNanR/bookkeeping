@@ -21,6 +21,7 @@ import site.minnan.bookkeeping.userinterface.dto.auth.LoginDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -42,7 +43,7 @@ public class AuthController {
      */
     @OperateLog(operation = Operation.LOGIN, module = "系统登录", content = "登录成功")
     @PostMapping("login")
-    public ResponseEntity<LoginVO> createAuthenticationToken(@RequestBody LoginDTO dto, HttpServletRequest request) throws Exception {
+    public ResponseEntity<LoginVO> createAuthenticationToken(@RequestBody @Valid LoginDTO dto) throws Exception {
         log.info("用户登录，登录信息：{}", dto.toString());
         try {
             Authentication authentication =

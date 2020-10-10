@@ -34,9 +34,8 @@ public class CustomUser {
     @Column(name = "create_time", columnDefinition = "timestamp comment '创建时间'")
     private Timestamp createTime;
 
-    @Convert(converter = UserType.UserTypeConverter.class)
-    @Column(name = "user_type")
-    private UserType userType;
+    @Column(name = "user_type", columnDefinition = "varchar(50) comment '用户类型'")
+    private String userType;
 
     @Column(name = "nick_name", columnDefinition = "varchar(50) comment '昵称'")
     private String nickName;
@@ -51,7 +50,7 @@ public class CustomUser {
     }
 
     public void changeUserType(Optional<String> userType) {
-        this.userType = userType.map(UserType::valueOf).orElse(this.userType);
+        userType.ifPresent(type -> this.userType = type);
     }
 
     @Override

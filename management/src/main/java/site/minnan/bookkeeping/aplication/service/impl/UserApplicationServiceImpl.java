@@ -29,13 +29,13 @@ public class UserApplicationServiceImpl implements UserApplicationService {
     @Override
     public QueryVO<UserVO> getUserList(GetUserListDTO dto) {
         Optional<String> nickNameOptional = Optional.ofNullable(dto.getNickName());
-        Optional<String> userTypeOptional = Optional.ofNullable(dto.getUserType());
+        Optional<UserType> userTypeOptional = Optional.ofNullable(dto.getUserType());
         Page<CustomUser> customUserPage = customUserRepository.findAll((root, query, criteriaBuilder) -> {
             Predicate conjunction = criteriaBuilder.conjunction();
             nickNameOptional.ifPresent(nickName -> conjunction.getExpressions().add(criteriaBuilder.like(root.get(
                     "nickName"), StrUtil.format("%{}%", nickName))));
             userTypeOptional.ifPresent(userType -> conjunction.getExpressions().add(criteriaBuilder.equal(root.get(
-                    "userType"), UserType.valueOf(userType))));
+                    "userType"), userType.typeName())));
             return conjunction;
         }, PageRequest.of(dto.getPageIndex() - 1, dto.getPageSize(), Sort.by(Sort.Direction.DESC, "createTime")));
         List<UserVO> userVOList = customUserPage.get().map(UserVO::new).collect(Collectors.toList());

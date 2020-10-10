@@ -24,6 +24,8 @@ import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
 import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping("app/auth")
@@ -37,7 +39,7 @@ public class UserController {
 
     @OperateType("登录")
     @PostMapping("login")
-    public ResponseEntity<UserInformationVO> createAuthenticationToken(@RequestBody LoginDTO dto) throws Exception {
+    public ResponseEntity<UserInformationVO> createAuthenticationToken(@RequestBody @Valid LoginDTO dto) throws Exception {
         log.info("用户登录，登录信息：{}", dto.toString());
         try {
             manager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
@@ -72,7 +74,7 @@ public class UserController {
      * @return
      */
     @PostMapping("register")
-    public ResponseEntity<UserInformationVO> register(@RequestBody RegisterDTO dto) {
+    public ResponseEntity<UserInformationVO> register(@RequestBody @Valid RegisterDTO dto) {
         try {
             userApplicationService.createUser(dto);
             UserInformationVO vo =

@@ -9,6 +9,6 @@ public class AddExpenseTypeDTO {
 
     private Integer userId;
 
-    @NotBlank
+    @NotBlank(message = "支出类型名称不能为空")
     private String typeName;
 }

@@ -1,11 +1,12 @@
 package site.minnan.bookkeeping.userinterface.dto.log;
 
 import lombok.Data;
+import site.minnan.bookkeeping.infrastructure.annocation.Operation;
 
 @Data
 public class DownloadLogDTO {
 
     private String username;
 
-    private String operation;
+    private Operation operation;
 }

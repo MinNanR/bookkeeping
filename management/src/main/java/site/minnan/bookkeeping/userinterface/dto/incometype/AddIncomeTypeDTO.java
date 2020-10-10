@@ -9,6 +9,6 @@ public class AddIncomeTypeDTO {
 
     private Integer userId;
 
-    @NotBlank
+    @NotBlank(message = "收入类型不能为空")
     private String typeName;
 }

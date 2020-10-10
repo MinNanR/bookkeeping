@@ -22,6 +22,6 @@ public class UserVO {
         this.username = user.getUsername();
         this.nickName = user.getNickName();
         this.createTime = DateUtil.format(user.getCreateTime(), "yyyy-MM-dd HH:mm:ss");
-        this.userType = user.getUserType().typeName();
+        this.userType = user.getUserType();
     }
 }

@@ -9,7 +9,6 @@ import site.minnan.bookkeeping.domain.repository.AccountRepository;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.service.WarehouseService;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
-import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.userinterface.dto.AddWarehouseDTO;
 
 import java.util.Optional;

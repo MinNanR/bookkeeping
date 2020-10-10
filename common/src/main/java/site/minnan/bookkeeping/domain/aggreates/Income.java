@@ -34,8 +34,8 @@ public class Income extends Journal {
     @Column(name = "income_type_id", columnDefinition = "int comment '收入类型id'")
     private Integer incomeTypeId;
 
-    public Income of(Integer warehouseId, IncomeType incomeType, BigDecimal amount) {
-        return new Income(null, warehouseId, amount, Timestamp.from(Instant.now()), incomeType.getId());
+    public static Income of(Integer warehouseId, IncomeType incomeType, BigDecimal amount, Timestamp createTime) {
+        return new Income(null, warehouseId, amount, createTime, incomeType.getId());
     }
 
     @Override

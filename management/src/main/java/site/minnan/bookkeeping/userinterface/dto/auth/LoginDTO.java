@@ -12,9 +12,9 @@ public class LoginDTO implements Serializable {
 
     private static final long serialVersionUID = 4601614480588276675L;
 
-    @NotBlank
+    @NotBlank(message = "用户名不能为空")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "密码不能为空")
     private String password;
 }

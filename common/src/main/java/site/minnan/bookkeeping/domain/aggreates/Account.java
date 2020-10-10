@@ -33,8 +33,14 @@ public class Account {
         return new Account(null, userId, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
-    public void settle(Journal journal) {
+    public void settle(Income journal) {
         this.totalBalance = this.totalBalance.add(journal.calculate());
+        this.totalIncome = this.totalIncome.add(journal.getAmount());
+    }
+
+    public void settle(Expense journal){
+        this.totalBalance = this.totalBalance.add(journal.calculate());
+        this.totalExpense = this.totalExpense.add(journal.getAmount());
     }
 
     public void addWarehouse(Warehouse warehouse){

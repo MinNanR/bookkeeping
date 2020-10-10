@@ -8,12 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.minnan.bookkeeping.application.service.UserConfigApplicationService;
-import site.minnan.bookkeeping.domain.aggreates.Ledger;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
-import site.minnan.bookkeeping.userinterface.dto.AddLedgerDTO;
 import site.minnan.bookkeeping.userinterface.dto.AddWarehouseDTO;
-import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.validation.Valid;

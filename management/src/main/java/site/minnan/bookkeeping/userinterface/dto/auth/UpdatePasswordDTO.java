@@ -12,9 +12,9 @@ public class UpdatePasswordDTO implements Serializable {
 
     Integer id;
 
-    @NotBlank
+    @NotBlank(message = "原密码不能为空")
     String originalPassword;
 
-    @NotBlank
+    @NotBlank(message = "新密码不能为空")
     String newPassword;
 }
