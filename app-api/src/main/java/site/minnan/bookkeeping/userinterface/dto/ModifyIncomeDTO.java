@@ -8,16 +8,16 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Data
-public class ModifyExpenseDTO {
+public class ModifyIncomeDTO {
 
-    @NotNull(message = "未指定要修改的支出记录")
+    @NotNull
     private Integer id;
 
     private Integer warehouseId;
 
     private BigDecimal amount;
 
-    private Integer expenseTypeId;
+    private Integer incomeTypeId;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
     private Timestamp createTime;

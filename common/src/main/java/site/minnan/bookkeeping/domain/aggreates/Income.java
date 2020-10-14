@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity
 @Table(name = "e_income")
@@ -34,12 +35,34 @@ public class Income extends Journal {
     @Column(name = "income_type_id", columnDefinition = "int comment '收入类型id'")
     private Integer incomeTypeId;
 
-    public static Income of(Integer warehouseId, IncomeType incomeType, BigDecimal amount, Timestamp createTime) {
-        return new Income(null, warehouseId, amount, createTime, incomeType.getId());
+    @Column(name = "remark", columnDefinition = "text comment '备注'")
+    private String remark;
+
+    public static Income of(Integer warehouseId, IncomeType incomeType, BigDecimal amount, Timestamp createTime,
+                            String remark) {
+        return new Income(null, warehouseId, amount, createTime, incomeType.getId(), remark);
     }
 
     @Override
     public BigDecimal calculate() {
         return amount;
+    }
+
+    public void changeInformation(Optional<IncomeType> incomeType, Optional<Timestamp> createTime,
+                                  Optional<String> remark){
+        incomeType.ifPresent(type -> this.incomeTypeId = type.getId());
+        createTime.ifPresent(time -> this.createTime = time);
+        remark.ifPresent(e -> this.remark = e);
+    }
+
+    /**
+     * 修正记录中的数值
+     *
+     * @param newAmount
+     * @return
+     */
+    @Override
+    public BigDecimal correct(BigDecimal newAmount) {
+        return newAmount.subtract(amount);
     }
 }

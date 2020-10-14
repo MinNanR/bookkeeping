@@ -56,4 +56,8 @@ public class Warehouse {
     public void modifyExpense(Expense expense, BigDecimal amount){
         this.balance = balance.add(expense.getAmount().subtract(amount));
     }
+
+    public void correctJournal(Journal journal, BigDecimal newAmount){
+        balance = balance.add(journal.correct(newAmount));
+    }
 }

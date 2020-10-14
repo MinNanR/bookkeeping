@@ -31,6 +31,7 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         Optional<String> nickNameOptional = Optional.ofNullable(dto.getNickName());
         Optional<UserType> userTypeOptional = Optional.ofNullable(dto.getUserType());
         Page<CustomUser> customUserPage = customUserRepository.findAll((root, query, criteriaBuilder) -> {
+            query.select(root.get("id"));
             Predicate conjunction = criteriaBuilder.conjunction();
             nickNameOptional.ifPresent(nickName -> conjunction.getExpressions().add(criteriaBuilder.like(root.get(
                     "nickName"), StrUtil.format("%{}%", nickName))));

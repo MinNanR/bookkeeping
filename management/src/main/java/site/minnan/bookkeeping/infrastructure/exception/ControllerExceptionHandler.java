@@ -43,6 +43,19 @@ public class ControllerExceptionHandler {
         return ResponseEntity.fail(ResponseCode.INVALID_PARAM, MapBuilder.create().put("details", details).build());
     }
 
+    @ExceptionHandler(EntityNotExistException.class)
+    @ResponseBody
+    public ResponseEntity<?> handleEntityNotExistException(EntityNotExistException ex){
+        return ResponseEntity.fail(ex.getMessage());
+    }
+
+    @ExceptionHandler(EntityAlreadyExistException.class)
+    @ResponseBody
+    public ResponseEntity<?> handleEntityAlreadyExistException(EntityAlreadyExistException ex){
+        return ResponseEntity.fail(ex.getMessage());
+    }
+
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<?> handleUnknownException(Exception ex) {

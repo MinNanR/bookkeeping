@@ -73,18 +73,14 @@ public class ExpenseTypeController {
     @OperateLog(operation = Operation.UPDATE, module = "支出类型", content = "修改支出类型")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("updateExpenseType")
-    public ResponseEntity<?> updateExpenseType(@RequestBody @Valid UpdateExpenseTypeDTO dto) {
+    public ResponseEntity<?> updateExpenseType(@RequestBody @Valid UpdateExpenseTypeDTO dto) throws EntityNotExistException, EntityAlreadyExistException {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         dto.setUserId(jwtUser.getId());
-        try {
-            expenseTypeApplicationService.updateExpenseType(dto);
-            return ResponseEntity.success();
-        } catch (EntityNotExistException | EntityAlreadyExistException e) {
-            return ResponseEntity.fail(e.getMessage());
-        }
+        expenseTypeApplicationService.updateExpenseType(dto);
+        return ResponseEntity.success();
     }
 
-    
+
     @OperateLog(operation = Operation.DELETE, module = "支出类型", content = "删除支出类型")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("deleteExpenseType")

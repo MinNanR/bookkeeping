@@ -47,8 +47,14 @@ public class Account {
         this.totalBalance = this.totalBalance.add(warehouse.getBalance());
     }
 
-    public void changeExpense(BigDecimal originalAmount, BigDecimal targetAmount){
-        totalBalance = totalBalance.add(originalAmount.subtract(targetAmount));
-        totalExpense = totalExpense.subtract(originalAmount.subtract(targetAmount));
+    public void modifyExpense(Expense expense, BigDecimal newAmount){
+        totalBalance = totalBalance.add(expense.correct(newAmount));
+        totalExpense = totalExpense.subtract(expense.correct(newAmount));
     }
+
+    public void modifyIncome(Income income, BigDecimal newAmount){
+        totalBalance = totalBalance.add(income.correct(newAmount));
+        totalIncome = totalIncome.add(income.correct(newAmount));
+    }
+
 }

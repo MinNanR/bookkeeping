@@ -25,27 +25,22 @@ public class RecordController {
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping("addExpense")
-    public ResponseEntity<?> addExpense(@RequestBody @Valid AddExpenseDTO dto){
-        try {
-            recordService.addExpense(dto);
-            return ResponseEntity.success();
-        } catch (EntityNotExistException e) {
-            return ResponseEntity.fail(e.getMessage());
-        }
+    public ResponseEntity<?> addExpense(@RequestBody @Valid AddExpenseDTO dto) throws EntityNotExistException {
+        recordService.addExpense(dto);
+        return ResponseEntity.success();
     }
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping("addIncome")
-    public ResponseEntity<?> addIncome(@RequestBody @Valid AddIncomeDTO dto){
-        try {
-            recordService.addIncome(dto);
-            return ResponseEntity.success();
-        } catch (EntityNotExistException e) {
-            return ResponseEntity.fail(e.getMessage());
-        }
+    public ResponseEntity<?> addIncome(@RequestBody @Valid AddIncomeDTO dto) throws EntityNotExistException {
+        recordService.addIncome(dto);
+        return ResponseEntity.success();
     }
 
-    public void modifyExpense(ModifyExpenseDTO dto){
-
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PostMapping("modifyExpense")
+    public ResponseEntity<?> modifyExpense(@RequestBody @Valid ModifyExpenseDTO dto) throws EntityNotExistException {
+        recordService.modifyExpense(dto);
+        return ResponseEntity.success();
     }
 }

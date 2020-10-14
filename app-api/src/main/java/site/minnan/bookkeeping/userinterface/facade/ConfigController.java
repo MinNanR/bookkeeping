@@ -25,15 +25,11 @@ public class ConfigController {
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping("addWarehouse")
-    public ResponseEntity<?> createWarehouse(@RequestBody @Valid AddWarehouseDTO dto){
+    public ResponseEntity<?> createWarehouse(@RequestBody @Valid AddWarehouseDTO dto) throws EntityAlreadyExistException {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         dto.setUserId(jwtUser.getId());
-        try {
-            userConfigApplicationService.createWarehouse(dto);
-            return ResponseEntity.success();
-        } catch (EntityAlreadyExistException e) {
-            return ResponseEntity.fail(e.getMessage());
-        }
+        userConfigApplicationService.createWarehouse(dto);
+        return ResponseEntity.success();
     }
 
 }

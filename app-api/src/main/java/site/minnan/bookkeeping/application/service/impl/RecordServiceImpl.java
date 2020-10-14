@@ -1,10 +1,8 @@
 package site.minnan.bookkeeping.application.service.impl;
 
 import cn.hutool.core.date.DateUtil;
-import com.fasterxml.jackson.databind.ser.BeanSerializerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.SerializationUtils;
 import site.minnan.bookkeeping.application.service.RecordService;
 import site.minnan.bookkeeping.domain.aggreates.*;
 import site.minnan.bookkeeping.domain.entity.ExpenseType;
@@ -15,10 +13,10 @@ import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.userinterface.dto.AddExpenseDTO;
 import site.minnan.bookkeeping.userinterface.dto.AddIncomeDTO;
 import site.minnan.bookkeeping.userinterface.dto.ModifyExpenseDTO;
+import site.minnan.bookkeeping.userinterface.dto.ModifyIncomeDTO;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.criteria.Predicate;
-import java.lang.invoke.SerializedLambda;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -107,7 +105,7 @@ public class RecordServiceImpl implements RecordService {
         Ledger ledger = ledgerOptional.orElseGet(() -> ledgerService.createLedger(warehouse.getAccountId()));
         Optional<IncomeType> incomeTypeOptional = incomeTypeRepository.findById(dto.getIncomeTypeId());
         IncomeType incomeType = incomeTypeOptional.orElseThrow(() -> new EntityNotExistException("收入类型不存在"));
-        Income income = Income.of(warehouse.getId(), incomeType, dto.getAmount(), dto.getCreateTime());
+        Income income = Income.of(warehouse.getId(), incomeType, dto.getAmount(), dto.getCreateTime(), dto.getRemark());
         //记入账号
         account.settle(income);
         //记入账本
@@ -133,14 +131,16 @@ public class RecordServiceImpl implements RecordService {
         Optional<Expense> expenseOptional = expenseRepository.findById(dto.getId());
         Expense expense = expenseOptional.orElseThrow(() -> new EntityNotExistException("支出记录不存在"));
         //修改支出类型
-        Optional.ofNullable(dto.getExpenseTypeId()).ifPresent(expenseTypeId -> {
-            Optional<ExpenseType> expenseTypeOptional = expenseTypeRepository.findById(expenseTypeId);
-            ExpenseType expenseType = expenseTypeOptional.orElseThrow(() -> new EntityExistsException("支出类型不存在"));
-            expense.changeExpenseType(expenseType);
-        });
+        Optional<ExpenseType> expenseType =
+                Optional.ofNullable(dto.getExpenseTypeId()).map(expenseTypeId -> expenseTypeRepository.findById(expenseTypeId)
+                        .orElseThrow(() -> new EntityExistsException("支出类型不存在")));
         //修改创建时间
-        Optional.ofNullable(dto.getCreatTime()).ifPresent(expense::changeCreateTime);
+        Optional<Timestamp> creatTime = Optional.ofNullable(dto.getCreateTime());
+        //修改备注
+        Optional<String> remark = Optional.ofNullable(dto.getRemark());
+        expense.changeInformation(expenseType, creatTime, remark);
         Optional<BigDecimal> amountOptional = Optional.ofNullable(dto.getAmount());
+        //需要修改金额
         if (amountOptional.isPresent() && amountOptional.get().compareTo(expense.getAmount()) != 0) {
             BigDecimal targetAmount = amountOptional.get();
             BigDecimal originalAmount = expense.getAmount();
@@ -151,8 +151,6 @@ public class RecordServiceImpl implements RecordService {
                 Integer warehouseId = warehouseIdOptional.get();
                 Warehouse targetWarehouse =
                         warehouseRepository.findById(warehouseId).orElseThrow(() -> new EntityExistsException("金库不存在"));
-                //修改支出金额
-                expense.changeAmount(targetAmount);
                 //转移金库
                 originalWarehouse.removeExpense(originalAmount);
                 targetWarehouse.settle(expense);
@@ -161,19 +159,21 @@ public class RecordServiceImpl implements RecordService {
                 expense.changeWarehouse(targetWarehouse);
             } else {
                 originalWarehouse.modifyExpense(expense, targetAmount);
-                expense.changeAmount(targetAmount);
                 warehouseRepository.save(originalWarehouse);
             }
+            //修正账户中的余额
             Account account = accountRepository.findById(originalWarehouse.getAccountId()).get();
-            account.changeExpense(originalAmount, targetAmount);
+            account.modifyExpense(expense, targetAmount);
             accountRepository.save(account);
+            //修正账本中的记录
             Ledger ledger = ledgerRepository.findById(expense.getLedgerId()).get();
-            ledger.modifyCost(originalAmount, targetAmount);
+            ledger.modifyCost(expense, targetAmount);
             ledgerRepository.save(ledger);
+            expense.changeAmount(targetAmount);
         } else {
-            Warehouse originalWarehouse = warehouseRepository.findById(expense.getWarehouseId()).get();
             Optional<Integer> warehouseIdOptional = Optional.ofNullable(dto.getWarehouseId());
             if (warehouseIdOptional.isPresent()) {
+                Warehouse originalWarehouse = warehouseRepository.findById(expense.getWarehouseId()).get();
                 Integer warehouseId = warehouseIdOptional.get();
                 Warehouse targetWarehouse =
                         warehouseRepository.findById(warehouseId).orElseThrow(() -> new EntityExistsException("金库不存在"));
@@ -188,4 +188,7 @@ public class RecordServiceImpl implements RecordService {
         expenseRepository.save(expense);
     }
 
+    @Override
+    public void modifyIncome(ModifyIncomeDTO dto) throws EntityNotExistException {
+    }
 }

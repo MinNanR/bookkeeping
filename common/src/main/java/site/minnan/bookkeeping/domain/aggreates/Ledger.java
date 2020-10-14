@@ -29,9 +29,6 @@ public class Ledger {
     @Column(name = "ledger_name", columnDefinition = "varchar(20) comment '账本名称'")
     private String ledgerName;
 
-    @Column(name = "total_balance", columnDefinition = "decimal(11, 2) comment '账本总余额'")
-    private BigDecimal totalBalance;
-
     @Column(name = "budget", columnDefinition = "decimal(11, 2) comment '花销预算'")
     private BigDecimal budget;
 
@@ -54,24 +51,24 @@ public class Ledger {
         this.accountId = accountId;
         this.totalExpense = BigDecimal.ZERO;
         this.totalIncome = BigDecimal.ZERO;
-        this.totalBalance = BigDecimal.ZERO;
         this.year = DateUtil.thisYear();
-        this.month = DateUtil.thisMonth();
+        this.month = DateUtil.thisMonth() + 1;
         this.ledgerName = StrUtil.format("{}年{}月账本", this.year, this.month);
     }
 
     public void cost(Expense expense) {
         totalExpense = totalExpense.add(expense.getAmount());
-        totalBalance = totalBalance.add(expense.calculate());
     }
 
     public void earn(Income income) {
         totalIncome = totalIncome.add(income.getAmount());
-        totalBalance = totalBalance.add(income.calculate());
     }
 
-    public void modifyCost(BigDecimal originalAmount, BigDecimal targetAmount){
-        totalBalance = totalBalance.add(originalAmount.subtract(targetAmount));
-        totalExpense = totalExpense.subtract(originalAmount.subtract(targetAmount));
+    public void modifyCost(Expense expense, BigDecimal newAmount){
+        totalExpense = totalExpense.subtract(expense.correct(newAmount));
+    }
+
+    public void modifyEarn(Income income, BigDecimal newAmount){
+        totalIncome = totalIncome.add(income.correct(newAmount));
     }
 }

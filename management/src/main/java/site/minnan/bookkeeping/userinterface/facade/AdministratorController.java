@@ -35,13 +35,9 @@ public class AdministratorController {
     @OperateLog(operation = Operation.ADD, module = "管理员", content = "添加管理员")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("createAdministrator")
-    public ResponseEntity<?> createAdministrator(@RequestBody @Valid AddAdministratorDTO dto) {
-        try {
-            administratorApplicationService.createAdministrator(dto);
-            return ResponseEntity.success();
-        } catch (EntityAlreadyExistException e) {
-            return ResponseEntity.fail("用户名已存在");
-        }
+    public ResponseEntity<?> createAdministrator(@RequestBody @Valid AddAdministratorDTO dto) throws EntityAlreadyExistException {
+        administratorApplicationService.createAdministrator(dto);
+        return ResponseEntity.success();
     }
 
 
@@ -51,20 +47,16 @@ public class AdministratorController {
      * @param dto
      * @return
      */
-    @OperateLog(operation = Operation.UPDATE, module = "管理员",content = "修改管理员信息")
+    @OperateLog(operation = Operation.UPDATE, module = "管理员", content = "修改管理员信息")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("updateAdministrator")
-    public ResponseEntity<?> updateAdministrator(@RequestBody UpdateAdministratorDTO dto) {
+    public ResponseEntity<?> updateAdministrator(@RequestBody UpdateAdministratorDTO dto) throws EntityNotExistException {
         if (dto.getId() == null) {
             JwtUser principal = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             dto.setId(principal.getId());
         }
-        try {
-            administratorApplicationService.updateAdministrator(dto);
-            return ResponseEntity.success();
-        } catch (EntityNotExistException e) {
-            return ResponseEntity.fail("用户不存在");
-        }
+        administratorApplicationService.updateAdministrator(dto);
+        return ResponseEntity.success();
     }
 
     /**
@@ -76,13 +68,13 @@ public class AdministratorController {
     @OperateLog(operation = Operation.UPDATE, module = "管理员", content = "修改管理员密码")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("changePassword")
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid UpdatePasswordDTO dto) {
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid UpdatePasswordDTO dto) throws EntityNotExistException {
         try {
             JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             dto.setId(user.getId());
             administratorApplicationService.changePassword(dto);
             return ResponseEntity.success();
-        } catch (EntityNotExistException | BadCredentialsException e) {
+        } catch (BadCredentialsException e) {
             return ResponseEntity.fail(e.getMessage());
         }
     }

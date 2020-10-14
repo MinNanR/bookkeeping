@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * 支出记录
@@ -53,19 +54,23 @@ public class Expense extends Journal {
         return amount.abs().negate();
     }
 
-    public void changeExpenseType(ExpenseType expenseType){
-        this.expenseTypeId = expenseType.getId();
-    }
-
-    public void changeCreateTime(Timestamp createTime){
-        this.createTime = createTime;
-    }
-
     public void changeAmount(BigDecimal amount){
         this.amount = amount;
     }
 
     public void changeWarehouse(Warehouse warehouse){
         this.warehouseId = warehouse.getId();
+    }
+
+    public void changeInformation(Optional<ExpenseType> expenseType, Optional<Timestamp> createTime,
+                                  Optional<String > remark){
+        expenseType.ifPresent(type -> this.expenseTypeId = type.getId());
+        createTime.ifPresent(time -> this.createTime = time);
+        remark.ifPresent(e -> this.remark = e);
+    }
+
+    @Override
+    public BigDecimal correct(BigDecimal newAmount) {
+        return amount.subtract(newAmount);
     }
 }

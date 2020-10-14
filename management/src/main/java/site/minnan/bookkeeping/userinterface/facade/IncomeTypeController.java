@@ -34,63 +34,59 @@ public class IncomeTypeController {
 
     /**
      * 添加收入类型
+     *
      * @param dto
      * @return
      */
     @OperateLog(operation = Operation.ADD, module = "收入类型", content = "添加收入类型")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("addIncomeType")
-    public ResponseEntity<?> addIncomeType(@RequestBody @Valid AddIncomeTypeDTO dto){
+    public ResponseEntity<?> addIncomeType(@RequestBody @Valid AddIncomeTypeDTO dto) throws EntityAlreadyExistException {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         dto.setUserId(jwtUser.getId());
-        try {
-            incomeTypeApplicationService.addIncomeType(dto);
-            return ResponseEntity.success();
-        } catch (EntityAlreadyExistException e) {
-            return ResponseEntity.fail(e.getMessage());
-        }
+        incomeTypeApplicationService.addIncomeType(dto);
+        return ResponseEntity.success();
     }
 
     /**
      * 查询收入类型
+     *
      * @param dto
      * @return
      */
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("getIncomeTypeList")
-    public ResponseEntity<QueryVO<IncomeTypeVO>> getIncomeTypeList(@RequestBody @Valid GetIncomeTypeListDTO dto){
+    public ResponseEntity<QueryVO<IncomeTypeVO>> getIncomeTypeList(@RequestBody @Valid GetIncomeTypeListDTO dto) {
         QueryVO<IncomeTypeVO> expenseTypeList = incomeTypeApplicationService.getIncomeTypeList(dto);
         return ResponseEntity.success(expenseTypeList);
     }
 
     /**
      * 修改收入类型
+     *
      * @param dto
      * @return
      */
     @OperateLog(operation = Operation.UPDATE, module = "收入类型", content = "修改收入类型")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("updateIncomeType")
-    public ResponseEntity<?> updateIncomeType(@RequestBody @Valid UpdateIncomeTypeDTO dto){
+    public ResponseEntity<?> updateIncomeType(@RequestBody @Valid UpdateIncomeTypeDTO dto) throws EntityNotExistException, EntityAlreadyExistException {
         JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         dto.setUserId(jwtUser.getId());
-        try {
-            incomeTypeApplicationService.updateIncomeType(dto);
-            return ResponseEntity.success();
-        } catch (EntityNotExistException | EntityAlreadyExistException e) {
-            return ResponseEntity.fail(e.getMessage());
-        }
+        incomeTypeApplicationService.updateIncomeType(dto);
+        return ResponseEntity.success();
     }
 
     /**
      * 删除收入类型
+     *
      * @param dto
      * @return
      */
     @OperateLog(operation = Operation.DELETE, module = "收入类型", content = "删除收入类型")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping("deleteIncomeType")
-    public ResponseEntity<?> deleteIncomeType(@RequestBody @Valid DeleteIncomeTypeDTO dto){
+    public ResponseEntity<?> deleteIncomeType(@RequestBody @Valid DeleteIncomeTypeDTO dto) {
         try {
             incomeTypeApplicationService.deleteIncomeType(dto);
             return ResponseEntity.success();
