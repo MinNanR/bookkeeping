@@ -26,6 +26,9 @@ public class Income extends Journal {
     @Column(name = "warehouse_id", columnDefinition = "int comment '金库id'")
     private Integer warehouseId;
 
+    @Column(name = "ledger_id", columnDefinition = "int comment '账本id'")
+    private Integer ledgerId;
+
     @Column(name = "amount", columnDefinition = "decimal(11, 2) comment '数量'")
     private BigDecimal amount;
 
@@ -38,9 +41,10 @@ public class Income extends Journal {
     @Column(name = "remark", columnDefinition = "text comment '备注'")
     private String remark;
 
-    public static Income of(Integer warehouseId, IncomeType incomeType, BigDecimal amount, Timestamp createTime,
+    public static Income of(Integer warehouseId, Integer ledgerId, IncomeType incomeType, BigDecimal amount,
+                            Timestamp createTime,
                             String remark) {
-        return new Income(null, warehouseId, amount, createTime, incomeType.getId(), remark);
+        return new Income(null, warehouseId, ledgerId, amount, createTime, incomeType.getId(), remark);
     }
 
     @Override
@@ -49,10 +53,18 @@ public class Income extends Journal {
     }
 
     public void changeInformation(Optional<IncomeType> incomeType, Optional<Timestamp> createTime,
-                                  Optional<String> remark){
+                                  Optional<String> remark) {
         incomeType.ifPresent(type -> this.incomeTypeId = type.getId());
         createTime.ifPresent(time -> this.createTime = time);
         remark.ifPresent(e -> this.remark = e);
+    }
+
+    public void changeAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public void changeWarehouse(Warehouse warehouse) {
+        this.warehouseId = warehouse.getId();
     }
 
     /**

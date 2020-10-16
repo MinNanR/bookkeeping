@@ -45,9 +45,9 @@ public class Warehouse {
         this.balance = this.balance.add(journal.calculate());
     }
 
-    public void removeExpense(BigDecimal amount){
-        balance = balance.add(amount);
-    }
+//    public void removeExpense(BigDecimal amount){
+//        balance = balance.add(amount);
+//    }
 
     public void removeIncome(BigDecimal amount){
         balance = balance.subtract(amount);
@@ -57,7 +57,15 @@ public class Warehouse {
         this.balance = balance.add(expense.getAmount().subtract(amount));
     }
 
+    public void modifyIncome(Income income, BigDecimal amount){
+        this.balance = balance.subtract(income.getAmount().subtract(amount));
+    }
+
     public void correctJournal(Journal journal, BigDecimal newAmount){
         balance = balance.add(journal.correct(newAmount));
+    }
+
+    public void correctJournal(Journal journal){
+        balance = balance.add(journal.correct(BigDecimal.ZERO));
     }
 }
