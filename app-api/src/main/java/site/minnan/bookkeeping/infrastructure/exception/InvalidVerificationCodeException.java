@@ -1,6 +1,6 @@
 package site.minnan.bookkeeping.infrastructure.exception;
 
-public class InvalidVerificationCodeException extends Exception {
+public class InvalidVerificationCodeException extends RuntimeException {
 
     private static final long serialVersionUID = 7432951369961908820L;
 
