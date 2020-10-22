@@ -33,28 +33,31 @@ public class Account {
         return new Account(null, userId, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
-    public void settle(Income journal) {
+    public void settle(Journal journal){
         this.totalBalance = this.totalBalance.add(journal.calculate());
-        this.totalIncome = this.totalIncome.add(journal.getAmount());
+        switch (journal.getJournalDirection()){
+            case INCOME:
+                totalIncome = totalIncome.add(journal.getAmount());
+                break;
+            case EXPENSE:
+                totalExpense = totalExpense.add(journal.getAmount());
+        }
     }
 
-    public void settle(Expense journal){
-        this.totalBalance = this.totalBalance.add(journal.calculate());
-        this.totalExpense = this.totalExpense.add(journal.getAmount());
+    public void settle(Journal source, Journal target){
+        this.totalBalance = this.totalBalance.subtract(source.correct(target.getAmount()));
+        switch (source.getJournalDirection()) {
+            case INCOME:
+                totalIncome = totalIncome.subtract(source.getAmount().subtract(target.getAmount()));
+                break;
+            case EXPENSE:
+                totalExpense = totalExpense.subtract(source.getAmount().subtract(target.getAmount()));
+                break;
+        }
     }
 
     public void addWarehouse(Warehouse warehouse){
         this.totalBalance = this.totalBalance.add(warehouse.getBalance());
-    }
-
-    public void modifyExpense(Expense expense, BigDecimal newAmount){
-        totalBalance = totalBalance.add(expense.correct(newAmount));
-        totalExpense = totalExpense.subtract(expense.correct(newAmount));
-    }
-
-    public void modifyIncome(Income income, BigDecimal newAmount){
-        totalBalance = totalBalance.add(income.correct(newAmount));
-        totalIncome = totalIncome.add(income.correct(newAmount));
     }
 
 }

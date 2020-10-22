@@ -4,17 +4,18 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.minnan.bookkeeping.infrastructure.enumeration.JournalDirection;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
 
 @Entity
-@Table(name = "dim_income_type")
+@Table(name = "dim_journal_type")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class IncomeType {
+public class JournalType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +31,11 @@ public class IncomeType {
     @Column(name = "update_user_id", columnDefinition ="int comment '创建人'")
     private Integer updateUserId;
 
-    public static IncomeType of(String typeName, Integer updateUserId){
-        return new IncomeType( null, typeName, Timestamp.from(Instant.now()), updateUserId);
+    @Enumerated(value = EnumType.STRING)
+    private JournalDirection journalDirection;
+
+    public static JournalType of(String typeName, Integer updateUserId, JournalDirection journalDirection){
+        return new JournalType( null, typeName, Timestamp.from(Instant.now()), updateUserId, journalDirection);
     }
 
     public void changeTypeName(String typeName, Integer updateUserId){

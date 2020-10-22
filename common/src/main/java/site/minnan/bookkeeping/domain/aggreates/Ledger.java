@@ -1,12 +1,12 @@
 package site.minnan.bookkeeping.domain.aggreates;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.minnan.bookkeeping.domain.entity.ExpenseType;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -47,28 +47,71 @@ public class Ledger {
     @Transient
     private List<Journal> journalList;
 
-    public Ledger(Integer accountId){
+    public Ledger(Integer accountId) {
+        this(accountId, DateUtil.thisYear(), DateUtil.thisMonth() + 1);
+
+    }
+
+    public Ledger(Integer accountId, Integer year, Integer month) {
         this.accountId = accountId;
         this.totalExpense = BigDecimal.ZERO;
         this.totalIncome = BigDecimal.ZERO;
-        this.year = DateUtil.thisYear();
-        this.month = DateUtil.thisMonth() + 1;
+        this.year = year;
+        this.month = month;
         this.ledgerName = StrUtil.format("{}年{}月账本", this.year, this.month);
     }
 
-    public void cost(Expense expense) {
-        totalExpense = totalExpense.add(expense.getAmount());
+    private void cost(Journal journal) {
+        totalExpense = totalExpense.add(journal.getAmount());
     }
 
-    public void earn(Income income) {
-        totalIncome = totalIncome.add(income.getAmount());
+    private void earn(Journal journal) {
+        totalIncome = totalIncome.add(journal.getAmount());
     }
 
-    public void modifyCost(Expense expense, BigDecimal newAmount){
-        totalExpense = totalExpense.subtract(expense.correct(newAmount));
+    /**
+     * 添加流水
+     * @param journal
+     */
+    public void addJournal(Journal journal) {
+        switch (journal.getJournalDirection()) {
+            case EXPENSE:
+                cost(journal);
+                break;
+            case INCOME:
+                earn(journal);
+                break;
+        }
     }
 
-    public void modifyEarn(Income income, BigDecimal newAmount){
-        totalIncome = totalIncome.add(income.correct(newAmount));
+    /**
+     * 移除流水
+     * @param journal
+     */
+    public void removeJournal(Journal journal) {
+        switch (journal.getJournalDirection()) {
+            case INCOME:
+                totalIncome = totalIncome.subtract(journal.getAmount());
+                break;
+            case EXPENSE:
+                totalExpense = totalExpense.subtract(journal.getAmount());
+                break;
+        }
+    }
+
+    /**
+     * 修正流水金额
+     * @param source
+     * @param target
+     */
+    public void correctJournal(Journal source, Journal target) {
+        switch (source.getJournalDirection()){
+            case INCOME:
+                totalIncome = totalIncome.subtract(source.getAmount().subtract(target.getAmount()));
+                break;
+            case EXPENSE:
+                totalExpense = totalExpense.subtract(source.getAmount().subtract(target.getAmount()));
+                break;
+        }
     }
 }

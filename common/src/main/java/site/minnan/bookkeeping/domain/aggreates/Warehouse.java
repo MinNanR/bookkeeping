@@ -1,9 +1,6 @@
 package site.minnan.bookkeeping.domain.aggreates;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -16,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@ToString
 public class Warehouse {
 
     @Id
@@ -41,31 +39,29 @@ public class Warehouse {
         return new Warehouse(null, warehouseName, balance, accountId, Timestamp.from(Instant.now()), null);
     }
 
-    public void settle(Journal journal) {
+    /**
+     * 结算流水（添加时使用）
+     * @param journal
+     */
+    public void settleJournal(Journal journal) {
         this.balance = this.balance.add(journal.calculate());
     }
 
-//    public void removeExpense(BigDecimal amount){
-//        balance = balance.add(amount);
-//    }
-
-    public void removeIncome(BigDecimal amount){
-        balance = balance.subtract(amount);
+    /**
+     * 结算流水（修改时使用）
+     * @param source
+     * @param target
+     */
+    public void settleJournal(Journal source, Journal target){
+        BigDecimal diff = source.correct(target.getAmount());
+        this.balance = this.balance.subtract(diff);
     }
 
-    public void modifyExpense(Expense expense, BigDecimal amount){
-        this.balance = balance.add(expense.getAmount().subtract(amount));
-    }
-
-    public void modifyIncome(Income income, BigDecimal amount){
-        this.balance = balance.subtract(income.getAmount().subtract(amount));
-    }
-
-    public void correctJournal(Journal journal, BigDecimal newAmount){
-        balance = balance.add(journal.correct(newAmount));
-    }
-
-    public void correctJournal(Journal journal){
-        balance = balance.add(journal.correct(BigDecimal.ZERO));
+    /**
+     * 移除流水
+     * @param journal
+     */
+    public void removeJournal(Journal journal){
+        this.balance = this.balance.subtract(journal.calculate());
     }
 }
