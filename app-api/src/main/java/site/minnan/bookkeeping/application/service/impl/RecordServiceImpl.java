@@ -3,6 +3,9 @@ package site.minnan.bookkeeping.application.service.impl;
 import cn.hutool.core.date.DateTime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.application.service.RecordService;
 import site.minnan.bookkeeping.domain.aggreates.Account;
@@ -14,13 +17,21 @@ import site.minnan.bookkeeping.domain.repository.*;
 import site.minnan.bookkeeping.domain.service.JournalService;
 import site.minnan.bookkeeping.domain.service.LedgerService;
 import site.minnan.bookkeeping.domain.service.WarehouseService;
+import site.minnan.bookkeeping.domain.vo.QueryVO;
+import site.minnan.bookkeeping.domain.vo.journal.JournalVO;
 import site.minnan.bookkeeping.infrastructure.enumeration.JournalDirection;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
-import site.minnan.bookkeeping.userinterface.dto.*;
+import site.minnan.bookkeeping.userinterface.dto.journal.AddJournalDTO;
+import site.minnan.bookkeeping.userinterface.dto.journal.DeleteJournalDTO;
+import site.minnan.bookkeeping.userinterface.dto.journal.GetJournalListDTO;
+import site.minnan.bookkeeping.userinterface.dto.journal.ModifyJournalDTO;
 
 import javax.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RecordServiceImpl implements RecordService {
@@ -44,10 +55,10 @@ public class RecordServiceImpl implements RecordService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private JournalService journalService;
+    private WarehouseService warehouseService;
 
     @Autowired
-    private WarehouseService warehouseService;
+    private JournalService journalService;
 
     /**
      * 添加流水记录
@@ -101,32 +112,31 @@ public class RecordServiceImpl implements RecordService {
      * @throws EntityNotExistException
      */
     @Override
-    public void modifyJournal(ModifyJournalDTO dto, JournalDirection direction) throws EntityNotExistException, JsonProcessingException {
-        Optional<Journal> expenseOptional = journalRepository.findById(dto.getId());
-        Journal expense = expenseOptional.orElseThrow(() -> new EntityNotExistException("支出记录不存在"));
-        Journal copy = expense.copy();
-        Optional<JournalType> expenseType = Optional.ofNullable(dto.getJournalTypeId()).map(id -> {
+    public void modifyJournal(ModifyJournalDTO dto) throws EntityNotExistException, JsonProcessingException {
+        Optional<Journal> journalOptional = journalRepository.findById(dto.getId());
+        Journal journal = journalOptional.orElseThrow(() -> new EntityNotExistException("记录不存在"));
+        Journal copy = journal.copy();
+        Optional<JournalType> JournalType = Optional.ofNullable(dto.getJournalTypeId()).map(id -> {
             JournalType journalType = journalTypeRepository.findById(id).orElseThrow(() -> new EntityNotExistException(
-                    "支出类型不存在"));
-            if (!direction.equals(journalType.getJournalDirection())) {
+                    "类型不存在"));
+            if (!journal.getJournalDirection().equals(journalType.getJournalDirection()))
                 throw new EntityNotExistException("类型不存在");
-            }
             return journalType;
         });
         Optional<Timestamp> createTime = Optional.ofNullable(dto.getCreateTime());
         Optional<String> remark = Optional.ofNullable(dto.getRemark());
-        copy.changeInformation(expenseType, createTime, remark);
+        copy.changeInformation(JournalType, createTime, remark);
         if (dto.getWarehouseId() != null) {
             Warehouse warehouse =
                     warehouseRepository.findById(dto.getWarehouseId()).orElseThrow(() -> new EntityNotExistException(
                             "金库不存在"));
             copy.changeWarehouse(warehouse);
         }
-        if(dto.getAmount() != null){
+        if (dto.getAmount() != null) {
             copy.changeAmount(dto.getAmount());
         }
-        warehouseService.moveJournal(expense, copy);
-        ledgerService.moveJournal(expense, copy);
+        warehouseService.correctJournal(journal, copy);
+        ledgerService.correctJournal(journal, copy);
         journalRepository.save(copy);
     }
 
@@ -136,18 +146,45 @@ public class RecordServiceImpl implements RecordService {
      * @param dto
      */
     @Override
-    public void deleteExpense(DeleteExpenseDTO dto) throws EntityNotExistException {
-
+    public void deleteJournal(DeleteJournalDTO dto) throws EntityNotExistException, JsonProcessingException {
+        Optional<Journal> journalOptional = journalRepository.findById(dto.getId());
+        Journal journal = journalOptional.orElseThrow(() -> new EntityNotExistException("记录不存在"));
+        Journal copy = journal.copy();
+        copy.changeAmount(BigDecimal.ZERO);
+        warehouseService.correctJournal(journal, copy);
+        ledgerService.correctJournal(journal, copy);
+        journalRepository.delete(copy);
     }
 
     /**
-     * 删除收入记录
+     * 查询流水记录
      *
      * @param dto
-     * @throws EntityNotExistException
+     * @return
      */
     @Override
-    public void deleteIncome(DeleteIncomeDTO dto) throws EntityNotExistException {
-
+    public QueryVO<JournalVO> getJournalList(GetJournalListDTO dto) {
+        Integer accountId = accountRepository.findAccountIdFirstByUserId(dto.getUserId());
+        Optional<String> warehouseId = Optional.ofNullable(dto.getWarehouseId());
+        Optional<Integer> journalTypeId = Optional.ofNullable(dto.getJournalTypeId());
+        Optional<Timestamp> startTime = Optional.ofNullable(dto.getStartTime());
+        Optional<Timestamp> endTime = Optional.ofNullable(dto.getEndTime());
+        //TODO 找不到accountId，需要在根对象上补充
+        Page<JournalVO> journalPage = journalRepository.findAll((root, query, criteriaBuilder) -> {
+            Predicate conjunction = criteriaBuilder.conjunction();
+            warehouseId.ifPresent(id -> conjunction.getExpressions().add(criteriaBuilder.equal(root.get("id"), id)));
+            journalTypeId.ifPresent(id -> conjunction.getExpressions().add(criteriaBuilder.equal(root.get(
+                    "journalTypeId"), id)));
+            startTime.ifPresent(time -> conjunction.getExpressions().add(criteriaBuilder.greaterThanOrEqualTo(root.get(
+                    "createTime"), time)));
+            endTime.ifPresent(time -> conjunction.getExpressions().add(criteriaBuilder.lessThanOrEqualTo(root.get(
+                    "createTime"), time)));
+            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("accountId"), accountId));
+            return conjunction;
+        }, PageRequest.of(dto.getPageIndex() - 1, dto.getPageSize(), Sort.by(Sort.Direction.DESC, "createTime")))
+                .map(journal -> journalService.assembleJournalVO(journal));
+        return new QueryVO<>(journalPage.getContent(), journalPage.getTotalElements());
     }
+
+
 }

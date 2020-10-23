@@ -83,6 +83,10 @@ public class Journal implements Cloneable {
         remark.ifPresent(e -> this.remark = e);
     }
 
+    public void changeLedger(Ledger ledger){
+        this.ledgerId = ledger.getId();
+    }
+
     public static Journal of(Integer warehouseId, Integer ledgerId, BigDecimal amount, JournalType journalType,
                              Timestamp createTime, String remark) {
         return new Journal(null, warehouseId, ledgerId, amount, createTime, journalType.getId(), remark,

@@ -1,20 +1,14 @@
 package site.minnan.bookkeeping.domain.service;
 
 import site.minnan.bookkeeping.domain.aggreates.Journal;
+import site.minnan.bookkeeping.domain.vo.journal.JournalVO;
 
 public interface JournalService {
 
     /**
-     * 修改账本
-     * @param source
-     * @param target
+     * 将流水记录组装成值对象
+     * @param journal
+     * @return
      */
-    void changeLedger(Journal source, Journal target);
-
-    /**
-     * 修改金额
-     * @param source
-     * @param target
-     */
-    void changeAmount(Journal source, Journal target);
+    JournalVO assembleJournalVO(Journal journal);
 }

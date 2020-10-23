@@ -3,14 +3,13 @@ package site.minnan.bookkeeping.application.service;
 import com.aliyuncs.exceptions.ClientException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import site.minnan.bookkeeping.domain.aggreates.CustomUser;
 import site.minnan.bookkeeping.domain.vo.auth.UserInformationVO;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.InvalidVerificationCodeException;
-import site.minnan.bookkeeping.userinterface.dto.AddUserDTO;
-import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
-import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.AddUserDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.RegisterDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.UpdateUserInformationDTO;
 
 public interface UserApplicationService extends UserDetailsService {
 

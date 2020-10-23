@@ -1,6 +1,7 @@
 package site.minnan.bookkeeping.domain.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.domain.aggreates.Journal;
 import site.minnan.bookkeeping.domain.aggreates.Warehouse;
@@ -42,7 +43,7 @@ public class WarehouseServiceImpl implements WarehouseService {
      * @param target
      */
     @Override
-    public void moveJournal(Journal source, Journal target) {
+    public void correctJournal(Journal source, Journal target) {
         Warehouse sourceWarehouse, targetWarehouse;
         if (!source.getWarehouseId().equals(target.getWarehouseId())) {
             sourceWarehouse = warehouseRepository.findById(source.getWarehouseId()).get();
@@ -70,5 +71,17 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public Integer getAccountId(Integer warehouseId) {
         return warehouseRepository.findAccountIdById(warehouseId);
+    }
+
+    /**
+     * 将id转换为名称
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    @Cacheable("WarehouseName")
+    public String mapIdToName(Integer id) {
+        return warehouseRepository.findWarehouseNameById(id).orElse("");
     }
 }

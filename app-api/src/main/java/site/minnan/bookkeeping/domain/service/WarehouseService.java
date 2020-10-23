@@ -26,7 +26,7 @@ public interface WarehouseService {
      * @param source
      * @param target
      */
-    void moveJournal(Journal source, Journal target);
+    void correctJournal(Journal source, Journal target);
 
     /**
      * 金库id
@@ -34,4 +34,11 @@ public interface WarehouseService {
      * @param warehouseId
      */
     Integer getAccountId(Integer warehouseId);
+
+    /**
+     * 将id转换为名称
+     * @param id
+     * @return
+     */
+    String mapIdToName(Integer id);
 }

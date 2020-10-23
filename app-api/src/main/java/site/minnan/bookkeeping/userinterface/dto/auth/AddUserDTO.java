@@ -1,8 +1,7 @@
-package site.minnan.bookkeeping.userinterface.dto;
+package site.minnan.bookkeeping.userinterface.dto.auth;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Data

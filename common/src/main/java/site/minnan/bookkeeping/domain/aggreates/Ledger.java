@@ -49,7 +49,6 @@ public class Ledger {
 
     public Ledger(Integer accountId) {
         this(accountId, DateUtil.thisYear(), DateUtil.thisMonth() + 1);
-
     }
 
     public Ledger(Integer accountId, Integer year, Integer month) {

@@ -5,8 +5,11 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class DeleteExpenseDTO {
+public class QueryDTO {
 
-    @NotNull(message = "未指定要删除的支出记录")
-    private Integer id;
+    @NotNull
+    private Integer pageIndex;
+
+    @NotNull
+    private Integer pageSize;
 }

@@ -24,9 +24,9 @@ import site.minnan.bookkeeping.infrastructure.exception.InvalidVerificationCodeE
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.MessageUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
-import site.minnan.bookkeeping.userinterface.dto.AddUserDTO;
-import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
-import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.AddUserDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.RegisterDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.UpdateUserInformationDTO;
 
 import java.time.Duration;
 import java.util.Optional;

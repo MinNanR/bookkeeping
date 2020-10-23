@@ -58,21 +58,25 @@ public class LegerServiceImpl implements LedgerService {
      * @param target
      */
     @Override
-    public void moveJournal(Journal source, Journal target) {
+    public void correctJournal(Journal source, Journal target) {
         Ledger sourceLedger, targetLedger;
         DateTime targetCreateTime = DateTime.of(target.getCreateTime());
         if (!DateUtil.isSameMonth(source.getCreateTime(), targetCreateTime)) {
             int year = targetCreateTime.year();
-            int month = targetCreateTime.month();
+            int month = targetCreateTime.month() + 1;
             sourceLedger = ledgerRepository.findById(source.getLedgerId()).get();
             targetLedger = ledgerRepository.findOne((root, query, criteriaBuilder) -> {
                 Predicate conjunction = criteriaBuilder.conjunction();
                 conjunction.getExpressions().add(criteriaBuilder.equal(root.get("year"), year));
                 conjunction.getExpressions().add(criteriaBuilder.equal(root.get("month"), month));
                 return conjunction;
-            }).orElseGet(() -> createLedger(warehouseService.getAccountId(target.getWarehouseId())));
+            }).orElseGet(() -> {
+                Ledger ledger = createLedger(warehouseService.getAccountId(target.getWarehouseId()), year, month);
+                target.changeLedger(ledger);
+                return ledger;
+            });
             sourceLedger.removeJournal(source);
-            targetLedger.addJournal(target);
+            targetLedger.addJournal(source);
         } else {
             sourceLedger = ledgerRepository.findById(source.getLedgerId()).get();
             targetLedger = sourceLedger;

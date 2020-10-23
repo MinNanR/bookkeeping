@@ -18,10 +18,10 @@ import site.minnan.bookkeeping.infrastructure.annocation.OperateType;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.infrastructure.exception.InvalidVerificationCodeException;
-import site.minnan.bookkeeping.userinterface.dto.AddUserDTO;
-import site.minnan.bookkeeping.userinterface.dto.LoginDTO;
-import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
-import site.minnan.bookkeeping.userinterface.dto.UpdateUserInformationDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.AddUserDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.LoginDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.RegisterDTO;
+import site.minnan.bookkeeping.userinterface.dto.auth.UpdateUserInformationDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.validation.Valid;

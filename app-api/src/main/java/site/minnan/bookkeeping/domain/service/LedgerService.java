@@ -28,5 +28,5 @@ public interface LedgerService {
      * @param source
      * @param target
      */
-    void moveJournal(Journal source, Journal target);
+    void correctJournal(Journal source, Journal target);
 }
