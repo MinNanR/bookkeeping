@@ -1,5 +1,7 @@
 package site.minnan.bookkeeping.infrastructure.security;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -61,6 +64,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(token);
+                    Date expireDate = jwtUtil.getExpirationDateFromToken(jwtToken);
+                    if (expireDate.before(DateUtil.tomorrow())) {
+                        String refreshToken = StrUtil.format("Bearer {}", jwtUtil.generateToken(userDetails));
+                        response.addHeader("new-token", refreshToken);
+                    }
                 }
             }
         } else {
