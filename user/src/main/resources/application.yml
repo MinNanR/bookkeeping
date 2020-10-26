@@ -1,0 +1,47 @@
+spring:
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+
+  datasource:
+    url: jdbc:mysql://minnan.site:3306/bookkeeping?serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  redis:
+    host: minnan.site
+    port: 6379
+    database: 6
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+
+server:
+  port: 8902
+  servlet:
+    context-path: /bookkeeping
+
+jwt:
+  route:
+    authentication:
+      path: /auth/getVerificationCodeForRegister, /auth/register
+  header: Authorization
+  expiration: 604800
+  scret: min107
+
+aliyun:
+  bucketName: link-server
+  baseUrl: http://minnan.site:2000
+
+logging:
+  level:
+    org.springframework.security:
+      - debug
+      - info
+    org.springframework.web: error
+    org.hibernate.SQL: debug
+    org.hibernate.engine.QueryParameters: debug
+    org.hibernate.engine.query.HQLQueryPlan: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace

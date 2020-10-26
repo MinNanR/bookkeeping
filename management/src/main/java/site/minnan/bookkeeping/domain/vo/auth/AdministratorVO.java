@@ -2,7 +2,7 @@ package site.minnan.bookkeeping.domain.vo.auth;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import site.minnan.bookkeeping.domain.aggreates.Administrator;
+import site.minnan.bookkeeping.domain.aggreates.CustomUser;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -50,11 +50,11 @@ public class AdministratorVO implements Serializable {
         this.createTime = createTime;
     }
 
-    public AdministratorVO(Administrator administrator){
+    public AdministratorVO(CustomUser administrator){
         this.id = administrator.getId();
         this.username = administrator.getUsername();
         this.nickName = administrator.getNickName();
-        this.role = RoleEnum.valueOf(administrator.getRole()).roleName();
+        this.role = RoleEnum.valueOf(administrator.getRole().name()).roleName();
         this.createTime = administrator.getCreateTime();
     }
 }

@@ -3,8 +3,10 @@ package site.minnan.bookkeeping.domain.aggreates;
 import com.google.common.base.Objects;
 import lombok.*;
 import site.minnan.bookkeeping.domain.entity.UserType;
+import site.minnan.bookkeeping.infrastructure.enumeration.Role;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
@@ -15,7 +17,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
-public class CustomUser {
+public class CustomUser implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +31,8 @@ public class CustomUser {
 
     @Setter
     @Column(name = "role", length = 20, columnDefinition = "varchar(20) comment '角色'")
-    private String role;
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     @Column(name = "create_time", columnDefinition = "timestamp comment '创建时间'")
     private Timestamp createTime;
@@ -40,7 +43,7 @@ public class CustomUser {
     @Column(name = "nick_name", columnDefinition = "varchar(50) comment '昵称'")
     private String nickName;
 
-    public static CustomUser of(String username, String password, String role) {
+    public static CustomUser of(String username, String password, Role role) {
         return new CustomUser(null, username, password, role, Timestamp.from(Instant.now()), null,
                 username);
     }
@@ -64,5 +67,10 @@ public class CustomUser {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public CustomUser(Integer id, String username){
+        this.id = id;
+        this.username = username;
     }
 }

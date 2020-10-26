@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import site.minnan.bookkeeping.aplication.service.ExpenseTypeApplicationService;
+import site.minnan.bookkeeping.application.service.ExpenseTypeApplicationService;
 import site.minnan.bookkeeping.domain.vo.QueryVO;
 import site.minnan.bookkeeping.domain.vo.auth.JwtUser;
 import site.minnan.bookkeeping.domain.vo.expensetype.ExpenseTypeVO;

@@ -9,7 +9,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import site.minnan.bookkeeping.aplication.service.LogApplicationService;
+import site.minnan.bookkeeping.application.service.LogApplicationService;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 import site.minnan.bookkeeping.userinterface.response.ResponseCode;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;

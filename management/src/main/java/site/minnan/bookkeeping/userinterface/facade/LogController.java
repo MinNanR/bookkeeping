@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import site.minnan.bookkeeping.aplication.service.LogApplicationService;
+import site.minnan.bookkeeping.application.service.LogApplicationService;
 import site.minnan.bookkeeping.domain.vo.QueryVO;
 import site.minnan.bookkeeping.domain.vo.log.LogVO;
 import site.minnan.bookkeeping.userinterface.dto.log.GetLogListDTO;

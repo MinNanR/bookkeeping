@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import site.minnan.bookkeeping.aplication.service.LogApplicationService;
+import site.minnan.bookkeeping.application.service.LogApplicationService;
 import site.minnan.bookkeeping.infrastructure.annocation.OperateLog;
 import site.minnan.bookkeeping.infrastructure.annocation.Operation;
 import site.minnan.bookkeeping.userinterface.dto.log.DownloadLogDTO;

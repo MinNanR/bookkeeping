@@ -4,12 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import site.minnan.bookkeeping.domain.aggreates.Administrator;
-import site.minnan.bookkeeping.domain.repository.AdministratorRepository;
+import site.minnan.bookkeeping.domain.aggreates.CustomUser;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
+import site.minnan.bookkeeping.domain.repository.UserRepository;
 import site.minnan.bookkeeping.domain.service.AdministratorService;
-import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
+import site.minnan.bookkeeping.infrastructure.enumeration.Role;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 
 import java.util.*;
@@ -18,7 +19,7 @@ import java.util.*;
 public class AdministratorServiceImpl implements AdministratorService {
 
     @Autowired
-    private AdministratorRepository administratorRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -35,32 +36,32 @@ public class AdministratorServiceImpl implements AdministratorService {
      */
     @Override
     public void createAdministrator(String username, String password, String nickName) throws EntityAlreadyExistException {
-        Optional<Administrator> administrator =
-                administratorRepository.findOne(SpecificationGenerator.equal("username", username));
+        Optional<CustomUser> administrator =
+                userRepository.findOne(SpecificationGenerator.equal("username", username));
         if (administrator.isPresent()) {
             throw new EntityAlreadyExistException("用户名已存在");
         }
         password = passwordEncoder.encode(password);
-        Administrator newAdmin = Administrator.of(username, password, nickName);
-        administratorRepository.save(newAdmin);
+        CustomUser newAdmin = CustomUser.of(username, password, Role.ADMIN);
+        userRepository.save(newAdmin);
     }
 
     @Override
     public void changePassword(Integer administratorId, String oldPassword, String newPassword) throws EntityNotExistException, BadCredentialsException {
-        Optional<Administrator> administrator = administratorRepository.findById(administratorId);
-        Administrator admin = administrator.orElseThrow(() -> new EntityNotExistException("用户不存在"));
-        if (passwordEncoder.matches(oldPassword, admin.getPassword())) {
-            admin.changeInformation(Optional.empty(), Optional.of(passwordEncoder.encode(newPassword)));
-            administratorRepository.save(admin);
-            redisUtil.delete("administrator:" + admin.getUsername());
-        } else {
-            throw new BadCredentialsException("原密码错误");
-        }
+//        Optional<CustomUser> administrator = userRepository.findById(administratorId);
+//        CustomUser admin = administrator.orElseThrow(() -> new EntityNotExistException("用户不存在"));
+//        if (passwordEncoder.matches(oldPassword, admin.getPassword())) {
+//            admin.changeInformation(Optional.empty(), Optional.of(passwordEncoder.encode(newPassword)));
+//            administratorRepository.save(admin);
+//            redisUtil.delete("administrator:" + admin.getUsername());
+//        } else {
+//            throw new BadCredentialsException("原密码错误");
+//        }
     }
 
     @Override
     public Map<Integer, String> mapAdministratorIdToUsername(Collection<Integer> ids) {
-        List<Administrator> administratorList = administratorRepository.findAdministratorsById(ids);
+        List<CustomUser> administratorList = userRepository.findAdministratorsById(ids);
         return administratorList.stream().collect(HashMap::new,
                 (hashMap, admin) -> hashMap.put(admin.getId(),
                 admin.getUsername()), HashMap::putAll);
