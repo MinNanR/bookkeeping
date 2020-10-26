@@ -93,6 +93,11 @@ public class RedisUtil {
         redisTemplate.opsForValue().set(key, value);
     }
 
+    public void putBeanAsJsonString(String key, Object bean, ObjectMapper objectMapper, Duration duration) throws JsonProcessingException {
+        String value = objectMapper.writeValueAsString(bean);
+        redisTemplate.opsForValue().set(key, value, duration);
+    }
+
     /**
      * 将一个Object按value方式存入数据库
      * @param key 键名

@@ -1,6 +1,10 @@
 package site.minnan.bookkeeping.application.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import com.aliyuncs.exceptions.ClientException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.message.ObjectMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,10 +21,14 @@ import site.minnan.bookkeeping.domain.repository.UserRepository;
 import site.minnan.bookkeeping.domain.vo.UserInformationVO;
 import site.minnan.bookkeeping.infrastructure.enumeration.Role;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
+import site.minnan.bookkeeping.infrastructure.util.MessageUtil;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
 import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
 import site.minnan.bookkeeping.userinterface.dto.AddAdminDTO;
+import site.minnan.bookkeeping.userinterface.dto.LoginCodeDTO;
 
+import javax.persistence.criteria.Predicate;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -39,6 +47,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MessageUtil messageUtil;
 
     /**
      * Locates the user based on the username. In the actual implementation, the search
@@ -96,19 +107,18 @@ public class UserServiceImpl implements UserService {
         return new UserInformationVO(token, joiner.toString().toLowerCase());
     }
 
-    /**
-     * 添加管理员
-     *
-     * @param dto
-     */
     @Override
-    public void addAdmin(AddAdminDTO dto) {
-        Optional<CustomUser> check = userRepository.findOne(SpecificationGenerator.equal("username",
-                dto.getUsername()));
-        if (check.isPresent()) {
-            throw new EntityAlreadyExistException("用户名已存在");
-        }
-        CustomUser newUser = CustomUser.of(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), Role.ADMIN);
-        userRepository.save(newUser);
+    public void createLoginVerificationCode(LoginCodeDTO dto) throws JsonProcessingException, ClientException {
+        Optional<CustomUser> userInDB = userRepository.findOne((root, criteriaQuery, criteriaBuilder) -> {
+            Predicate conjunction = criteriaBuilder.conjunction();
+            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("username"), dto.getUsername()));
+            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("role"), Role.USER));
+            return conjunction;
+        });
+        CustomUser user = userInDB.orElseThrow(() -> new EntityNotExistException("用户不存在"));
+        String verificationCode = RandomUtil.randomNumbers(6);
+        redisUtil.putBeanAsJsonString(StrUtil.format("loginVerificationCode:{}:{}", dto.getUsername(), verificationCode), user,
+                new ObjectMapper(), Duration.ofMinutes(5));
+        messageUtil.sendMessageVerificationCode(dto.getUsername(), verificationCode);
     }
 }
