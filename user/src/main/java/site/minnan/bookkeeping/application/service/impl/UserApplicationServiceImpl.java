@@ -5,8 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.aliyuncs.exceptions.ClientException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +31,6 @@ import site.minnan.bookkeeping.userinterface.dto.auth.UpdateUserInformationDTO;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.StringJoiner;
 
 @Service("CustomUserService")
 public class UserApplicationServiceImpl implements UserApplicationService {
