@@ -36,20 +36,11 @@ package auth{
 }
 
 package account{
-    class Account{
-    Integer id
-    Integer userId
-    BigDecimal totalBalance
-    Date wageDay
-    List<Warehouse> warehouseList
-    List<Journal> journalList
-    }
 
     class Ledger{
     Integer id
-    Integer accountId
+    Integer userId
     String ledgerName
-    BigDecimal budget
     BigDecimal totalIncome
     BigDecimal totalExpense
     List<Journal> journalList
@@ -59,7 +50,7 @@ package account{
     Integer id
     String warehouseName
     Double balance
-    Integer accountId
+    Integer userId
     }
 
     class Currency{
@@ -76,38 +67,25 @@ package account{
     Timestamp createTime
     }
 
-    class Expense{
-    ExpenseType type
-    }
-
-    class Income{
-    IncomeType type
-    }
-
-    class ExpenseType{
-    Integer id
-    String name
-    }
-
-    class IncomeType{
-    Integer id
-    String name
+    class JournalType{
+    typeName
     }
 
     class InvestmentWarehouse
     class VaultWarehouse
 
-    Account <-- Ledger
-    Account <-- Warehouse
-    Account <-- Journal
-    Journal <|-- Expense
-    Journal <|-- Income
-    Expense <-- ExpenseType
-    Income <-- IncomeType
-    Warehouse --* Currency
-    User <|-- Account
-    Warehouse <|-- VaultWarehouse
+    Journal *-- JournalType
+    Journal *-- Currency
+
+    Ledger o-- Journal
+    Warehouse o-- Journal
+
     Warehouse <|-- InvestmentWarehouse
+    Warehouse <|-- VaultWarehouse
+
+    User o-- Ledger
+    User o-- Warehouse
+
 }
 
 @enduml

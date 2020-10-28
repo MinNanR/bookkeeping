@@ -1,0 +1,7 @@
+POST http://localhost:8900/bookkeeping/auth/login
+Content-Type: application/json
+
+{
+  "username": "min",
+  "password": "minnan35"
+}

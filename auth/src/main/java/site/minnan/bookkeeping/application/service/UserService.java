@@ -1,25 +1,13 @@
 package site.minnan.bookkeeping.application.service;
 
-import com.aliyuncs.exceptions.ClientException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import site.minnan.bookkeeping.domain.vo.UserInformationVO;
-import site.minnan.bookkeeping.userinterface.dto.AddAdminDTO;
-import site.minnan.bookkeeping.userinterface.dto.LoginCodeDTO;
+import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
 
 public interface UserService extends UserDetailsService {
 
     /**
-     * 获取用户信息
-     *
-     * @param username
+     * 生成登录信息
      * @return
      */
-    UserInformationVO getUserInformationByUsername(String username);
-
-    /**
-     * 为用户生成用于登录的验证码
-     * @param dto
-     */
-    void createLoginVerificationCode(LoginCodeDTO dto) throws JsonProcessingException, ClientException;
+    LoginVO getLoginInformation();
 }

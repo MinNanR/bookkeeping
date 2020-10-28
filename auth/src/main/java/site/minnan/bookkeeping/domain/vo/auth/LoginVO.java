@@ -1,11 +1,11 @@
-package site.minnan.bookkeeping.domain.vo;
+package site.minnan.bookkeeping.domain.vo.auth;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
-public class UserInformationVO {
+public class LoginVO {
 
     private String jwtToken;
 

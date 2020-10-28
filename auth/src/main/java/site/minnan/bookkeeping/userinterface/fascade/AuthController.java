@@ -1,9 +1,8 @@
-package site.minnan.bookkeeping.userinterface.facade;
+package site.minnan.bookkeeping.userinterface.fascade;
 
-import com.aliyuncs.exceptions.ClientException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -15,23 +14,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.minnan.bookkeeping.application.service.UserService;
-import site.minnan.bookkeeping.domain.vo.UserInformationVO;
-import site.minnan.bookkeeping.userinterface.dto.LoginCodeDTO;
+import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
 import site.minnan.bookkeeping.userinterface.dto.PasswordLoginDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/auth")
 @Slf4j
 public class AuthController {
 
     @Autowired
-    private UserService userService;
+    private AuthenticationManager manager;
 
     @Autowired
-    private AuthenticationManager manager;
+    @Qualifier(value = "AuthUserService")
+    private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid PasswordLoginDTO dto) throws Exception {
@@ -45,13 +44,7 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             throw new Exception(("用户名或密码错误"));
         }
-        UserInformationVO vo = userService.getUserInformationByUsername(dto.getUsername());
+        LoginVO vo = userService.getLoginInformation();
         return ResponseEntity.success(vo);
-    }
-
-    @PostMapping("/getVerificationCode")
-    public ResponseEntity<?> getLoginVerificationCode(@RequestBody @Valid LoginCodeDTO dto) throws JsonProcessingException, ClientException {
-        userService.createLoginVerificationCode(dto);
-        return ResponseEntity.success();
     }
 }

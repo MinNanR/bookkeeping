@@ -31,7 +31,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    @Qualifier("AdministratorApplicationService")
     private UserDetailsService userDetailsService;
 
     /**
