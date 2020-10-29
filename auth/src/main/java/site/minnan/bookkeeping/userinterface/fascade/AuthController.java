@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import site.minnan.bookkeeping.application.service.UserService;
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
 import site.minnan.bookkeeping.userinterface.dto.PasswordLoginDTO;
-import site.minnan.bookkeeping.userinterface.dto.RegisterCodeDTO;
+import site.minnan.bookkeeping.userinterface.dto.VerificationCodeDTO;
 import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
+import site.minnan.bookkeeping.userinterface.dto.VerificationCodeLoginDTO;
 import site.minnan.bookkeeping.userinterface.response.ResponseEntity;
 
 import javax.validation.Valid;
@@ -36,7 +37,7 @@ public class AuthController {
     @Qualifier(value = "AuthUserService")
     private UserService userService;
 
-    @PostMapping("login")
+    @PostMapping("login/password")
     public ResponseEntity<LoginVO> login(@RequestBody @Valid PasswordLoginDTO dto) throws Exception {
         log.info("用户登录，登录信息：{}", dto.toString());
         try {
@@ -53,7 +54,7 @@ public class AuthController {
     }
 
     @PostMapping("getRegisterVerificationCode")
-    public ResponseEntity<?> getRegisterVerificationCode(@RequestBody @Valid RegisterCodeDTO dto){
+    public ResponseEntity<?> getRegisterVerificationCode(@RequestBody @Valid VerificationCodeDTO dto){
         try {
             userService.getRegisterVerificationCode(dto);
             return ResponseEntity.success("短息发送成功，有效期五分钟");
@@ -64,11 +65,22 @@ public class AuthController {
 
     @PostMapping("register")
     public ResponseEntity<LoginVO> register(@RequestBody @Valid RegisterDTO dto){
-        try {
             LoginVO vo = userService.createUser(dto);
             return ResponseEntity.success(vo);
-        } catch (Exception e) {
-            return ResponseEntity.fail(e.getMessage());
+    }
+
+    @PostMapping("getLoginVerificationCode")
+    public ResponseEntity<?> getLoginVerificationCode(@RequestBody @Valid VerificationCodeDTO dto){
+        try {
+            userService.getLoginVerificationCode(dto);
+            return ResponseEntity.success("短息发送成功，有效期五分钟");
+        } catch (ClientException | JsonProcessingException e) {
+            return ResponseEntity.fail("短信发送失败");
         }
+    }
+
+    public ResponseEntity<LoginVO> loginVerificationCode(@RequestBody @Valid VerificationCodeLoginDTO dto){
+        LoginVO vo = userService.login(dto);
+        return ResponseEntity.success(vo);
     }
 }

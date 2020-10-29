@@ -11,6 +11,7 @@ import site.minnan.bookkeeping.domain.service.AuthUserService;
 import site.minnan.bookkeeping.infrastructure.enumeration.Role;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
 
+import javax.persistence.criteria.Predicate;
 import java.util.Optional;
 
 @Service
@@ -31,8 +32,25 @@ public class AuthUserServiceImpl implements AuthUserService {
      */
     @Override
     @Cacheable(value = "user")
-    public Optional<AuthUser> getUserByUsername(String username) {
+    public Optional<AuthUser> getAuthUserByUsername(String username) {
         return authUserRepository.findOne(SpecificationGenerator.equal("username", username));
+    }
+
+    /**
+     * 根据用户名查找普通用户
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    @Cacheable(value = "user")
+    public Optional<AuthUser> getUserByUsername(String username) {
+        return authUserRepository.findOne((root, criteriaQuery, criteriaBuilder) -> {
+            Predicate conjunction = criteriaBuilder.conjunction();
+            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("role"), Role.USER));
+            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("username"), username));
+            return conjunction;
+        });
     }
 
     /**
@@ -44,7 +62,7 @@ public class AuthUserServiceImpl implements AuthUserService {
      */
     @Override
     public AuthUser createUser(String username, String rawPassword) {
-        if (getUserByUsername(username).isPresent()) {
+        if (getAuthUserByUsername(username).isPresent()) {
             throw new EntityAlreadyExistException("用户名已存在");
         }
         AuthUser newUser = AuthUser.of(username, passwordEncoder.encode(rawPassword), Role.USER);

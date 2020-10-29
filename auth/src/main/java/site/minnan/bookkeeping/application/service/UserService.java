@@ -3,10 +3,10 @@ package site.minnan.bookkeeping.application.service;
 import com.aliyuncs.exceptions.ClientException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import site.minnan.bookkeeping.domain.aggreates.AuthUser;
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
-import site.minnan.bookkeeping.userinterface.dto.RegisterCodeDTO;
+import site.minnan.bookkeeping.userinterface.dto.VerificationCodeDTO;
 import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
+import site.minnan.bookkeeping.userinterface.dto.VerificationCodeLoginDTO;
 
 public interface UserService extends UserDetailsService {
 
@@ -22,11 +22,21 @@ public interface UserService extends UserDetailsService {
      *
      * @param dto
      */
-    void getRegisterVerificationCode(RegisterCodeDTO dto) throws ClientException, JsonProcessingException;
+    void getRegisterVerificationCode(VerificationCodeDTO dto) throws ClientException, JsonProcessingException;
 
     /**
      * 创建用户
+     *
      * @param dto
      */
-    LoginVO createUser(RegisterDTO dto) throws Exception;
+    LoginVO createUser(RegisterDTO dto);
+
+    /**
+     * 获取登录用的验证码
+     *
+     * @param dto
+     */
+    void getLoginVerificationCode(VerificationCodeDTO dto) throws ClientException, JsonProcessingException;
+
+    LoginVO login(VerificationCodeLoginDTO dto);
 }
