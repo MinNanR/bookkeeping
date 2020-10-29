@@ -1,5 +1,9 @@
 package site.minnan.bookkeeping.application.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import com.aliyuncs.exceptions.ClientException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,8 +15,14 @@ import site.minnan.bookkeeping.domain.aggreates.AuthUser;
 import site.minnan.bookkeeping.domain.entity.JwtUser;
 import site.minnan.bookkeeping.domain.service.AuthUserService;
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
+import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
+import site.minnan.bookkeeping.infrastructure.util.MessageUtil;
 import site.minnan.bookkeeping.infrastructure.utils.JwtUtil;
+import site.minnan.bookkeeping.infrastructure.utils.RedisUtil;
+import site.minnan.bookkeeping.userinterface.dto.RegisterCodeDTO;
+import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Service("AuthUserService")
@@ -23,6 +33,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private MessageUtil messageUtil;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * Locates the user based on the username. In the actual implementation, the search
@@ -58,5 +74,40 @@ public class UserServiceImpl implements UserService {
             roleBuilder.append(authority.getAuthority());
         }
         return new LoginVO(jwtToken, roleBuilder.toString());
+    }
+
+    /**
+     * 生成注册验证码
+     *
+     * @param dto
+     */
+    @Override
+    public void getRegisterVerificationCode(RegisterCodeDTO dto) throws ClientException, JsonProcessingException {
+        Optional<AuthUser> optional = authUserService.getUserByUsername(dto.getUsername());
+        if (optional.isPresent()) {
+            throw new EntityAlreadyExistException("用户名已存在");
+        }
+        String verificationCode = RandomUtil.randomNumbers(6);
+        redisUtil.valueSet("registerVerificationCode:" + verificationCode, dto.getUsername(), Duration.ofMinutes(5));
+        messageUtil.sendMessageVerificationCode(dto.getUsername(), verificationCode);
+    }
+
+    /**
+     * 创建用户
+     *
+     * @param dto
+     */
+    @Override
+    public LoginVO createUser(RegisterDTO dto) throws Exception {
+        String username = (String) redisUtil.getValue("registerVerificationCode:" + dto.getVerificationCode());
+        if (!dto.getUsername().equals(username)) {
+            throw new Exception("验证码不正确");
+        }
+        AuthUser createdUser = authUserService.createUser(dto.getUsername(), dto.getPassword());
+        JwtUser jwtUser = JwtUser.of(createdUser.getId(), createdUser.getUsername(), createdUser.getPassword(),
+                createdUser.getRole().name(), true);
+        String token = jwtUtil.generateToken(jwtUser);
+        String jwtToken = "Bearer " + token;
+        return new LoginVO(jwtToken, createdUser.getRole().name());
     }
 }

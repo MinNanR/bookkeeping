@@ -28,6 +28,9 @@ public class Ledger {
     @Column(name = "create_time",columnDefinition = "timestamp comment '创建时间'")
     private Timestamp createTime;
 
+    @Column(name = "total_balance", columnDefinition = "decimal(11, 2) comment '总余额'")
+    private BigDecimal totalBalance;
+
     @Column(name = "total_income", columnDefinition = "decimal(11,2) comment '总收入'")
     @Setter
     private BigDecimal totalIncome;
@@ -40,9 +43,10 @@ public class Ledger {
     private Integer currencyId;
 
     public static Ledger of(Currency currency, Integer userId){
-        String ledgerName = StrUtil.format("我的{}账本", currency.getName());
-        return new Ledger(null, ledgerName,userId,Timestamp.from(Instant.now()), BigDecimal.ZERO, BigDecimal.ZERO,
-                currency.getId());
+//        String ledgerName = StrUtil.format("我的{}账本", currency.getName());
+//        return new Ledger(null, ledgerName,userId,Timestamp.from(Instant.now()), BigDecimal.ZERO, BigDecimal.ZERO,
+//                currency.getId());
+        return null;
     }
 
 }

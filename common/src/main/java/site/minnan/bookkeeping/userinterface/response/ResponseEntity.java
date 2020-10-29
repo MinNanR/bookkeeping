@@ -32,6 +32,12 @@ public class ResponseEntity<T> {
         return responseEntity;
     }
 
+    public static<T> ResponseEntity<T> success(String message){
+        ResponseEntity<T> responseEntity = new ResponseEntity<>(ResponseCode.SUCCESS);
+        responseEntity.message = message;
+        return responseEntity;
+    }
+
     public static ResponseEntity<?> fail(ResponseCode responseCode){
         return new ResponseEntity<>(responseCode);
     }
