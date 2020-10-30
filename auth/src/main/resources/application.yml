@@ -3,7 +3,7 @@ spring:
     static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
 
   datasource:
-    url: jdbc:mysql://localhost:3306/bookkeeping?serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://minnan.site:3306/bookkeeping_test?serverTimezone=Asia/Shanghai
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -21,8 +21,6 @@ spring:
 
 server:
   port: 8900
-  servlet:
-    context-path: /bookkeeping
 
 jwt:
   route:
