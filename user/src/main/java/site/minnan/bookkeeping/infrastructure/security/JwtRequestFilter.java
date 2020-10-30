@@ -31,7 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    @Qualifier("CustomUserService")
+    @Qualifier("AuthUserService")
     private UserDetailsService userDetailsService;
 
     /**

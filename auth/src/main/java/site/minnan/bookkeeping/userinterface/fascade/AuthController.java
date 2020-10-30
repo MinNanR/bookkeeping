@@ -10,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,23 +39,29 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("login/password")
-    public ResponseEntity<LoginVO> login(@RequestBody @Valid PasswordLoginDTO dto) throws Exception {
+    public ResponseEntity<LoginVO> loginPassword(@RequestBody @Valid PasswordLoginDTO dto) throws AuthenticationException {
         log.info("用户登录，登录信息：{}", dto.toString());
         try {
             Authentication authentication =
                     manager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (DisabledException e) {
-            throw new Exception("用户被禁用", e);
+            throw new DisabledException("用户被禁用", e);
         } catch (BadCredentialsException e) {
-            throw new Exception(("用户名或密码错误"));
+            throw new BadCredentialsException("用户名或密码错误", e);
         }
         LoginVO vo = userService.getLoginInformation();
         return ResponseEntity.success(vo);
     }
 
-    @PostMapping("getRegisterVerificationCode")
-    public ResponseEntity<?> getRegisterVerificationCode(@RequestBody @Valid VerificationCodeDTO dto){
+    @PostMapping("login/verificationCode")
+    public ResponseEntity<LoginVO> loginVerificationCode(@RequestBody @Valid VerificationCodeLoginDTO dto) {
+        LoginVO vo = userService.login(dto);
+        return ResponseEntity.success(vo);
+    }
+
+    @PostMapping("verificationCode/register")
+    public ResponseEntity<?> getRegisterVerificationCode(@RequestBody @Valid VerificationCodeDTO dto) {
         try {
             userService.getRegisterVerificationCode(dto);
             return ResponseEntity.success("短息发送成功，有效期五分钟");
@@ -63,14 +70,8 @@ public class AuthController {
         }
     }
 
-    @PostMapping("register")
-    public ResponseEntity<LoginVO> register(@RequestBody @Valid RegisterDTO dto){
-            LoginVO vo = userService.createUser(dto);
-            return ResponseEntity.success(vo);
-    }
-
-    @PostMapping("getLoginVerificationCode")
-    public ResponseEntity<?> getLoginVerificationCode(@RequestBody @Valid VerificationCodeDTO dto){
+    @PostMapping("verificationCode/login")
+    public ResponseEntity<?> getLoginVerificationCode(@RequestBody @Valid VerificationCodeDTO dto) {
         try {
             userService.getLoginVerificationCode(dto);
             return ResponseEntity.success("短息发送成功，有效期五分钟");
@@ -79,8 +80,9 @@ public class AuthController {
         }
     }
 
-    public ResponseEntity<LoginVO> loginVerificationCode(@RequestBody @Valid VerificationCodeLoginDTO dto){
-        LoginVO vo = userService.login(dto);
+    @PostMapping("register")
+    public ResponseEntity<LoginVO> register(@RequestBody @Valid RegisterDTO dto) {
+        LoginVO vo = userService.createUser(dto);
         return ResponseEntity.success(vo);
     }
 }

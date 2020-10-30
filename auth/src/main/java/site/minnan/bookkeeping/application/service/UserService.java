@@ -4,6 +4,7 @@ import com.aliyuncs.exceptions.ClientException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import site.minnan.bookkeeping.domain.vo.auth.LoginVO;
+import site.minnan.bookkeeping.infrastructure.exception.InvalidVerificationCodeException;
 import site.minnan.bookkeeping.userinterface.dto.VerificationCodeDTO;
 import site.minnan.bookkeeping.userinterface.dto.RegisterDTO;
 import site.minnan.bookkeeping.userinterface.dto.VerificationCodeLoginDTO;
@@ -38,5 +39,5 @@ public interface UserService extends UserDetailsService {
      */
     void getLoginVerificationCode(VerificationCodeDTO dto) throws ClientException, JsonProcessingException;
 
-    LoginVO login(VerificationCodeLoginDTO dto);
+    LoginVO login(VerificationCodeLoginDTO dto) throws InvalidVerificationCodeException;
 }

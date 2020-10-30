@@ -4,6 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.aliyuncs.exceptions.ClientException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -100,6 +101,7 @@ public class UserServiceImpl implements UserService {
      * @param dto
      */
     @Override
+    @CacheEvict(value = "user", key = "#dto.username")
     public LoginVO createUser(RegisterDTO dto) {
         String username = (String) redisUtil.getValue("registerVerificationCode:" + dto.getVerificationCode());
         if (!dto.getUsername().equals(username)) {
@@ -128,7 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LoginVO login(VerificationCodeLoginDTO dto) {
+    public LoginVO login(VerificationCodeLoginDTO dto) throws InvalidVerificationCodeException {
         String username = (String) redisUtil.getValue("loginVerificationCode:" + dto.getVerificationCode());
         if (!dto.getUsername().equals(username)) {
             throw new InvalidVerificationCodeException("验证码不正确");
