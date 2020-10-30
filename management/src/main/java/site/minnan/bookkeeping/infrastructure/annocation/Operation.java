@@ -1,9 +1,5 @@
 package site.minnan.bookkeeping.infrastructure.annocation;
 
-import site.minnan.bookkeeping.domain.entity.UserType;
-
-import javax.persistence.AttributeConverter;
-
 public enum Operation {
 
     ADD("添加"),

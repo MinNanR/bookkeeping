@@ -1,7 +1,66 @@
-POST http://localhost:8900/bookkeeping/auth/login
+###
+POST http://localhost:8900/auth/verificationCode/register
 Content-Type: application/json
 
 {
-  "username": "min",
+  "username": "123412341234"
+}
+
+###
+POST http://localhost:8900/auth/register
+Content-Type: application/json
+
+{
+  "username":"15220378779",
+  "verificationCode": "927161",
   "password": "minnan35"
 }
+
+###
+POST http://localhost:8900/auth/login/password
+Content-Type: application/json
+
+{
+  "username":"15220378779",
+  "password": "minnan35"
+}
+
+###
+POST http://localhost:8900/auth/verificationCode/login
+Content-Type: application/json
+
+{
+  "username": "15220378779"
+}
+
+###
+POST http://localhost:8900/auth/login/verificationCode
+Content-Type: application/json
+
+{
+  "username":"15220378779",
+  "verificationCode": "663299"
+}
+
+###
+POST http://localhost:8902/user/CustomConfig/createLedger
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "ledgerName": "Book"
+}
+
+###
+POST http://localhost:8902/user/CustomConfig/createWarehouse
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "warehouseName": "微信钱包",
+  "type": "WECHAT",
+  "ledgerId": 2,
+  "currencyId": "1",
+  "balance": 100
+}
+

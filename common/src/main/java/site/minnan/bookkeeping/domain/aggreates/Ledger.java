@@ -25,28 +25,27 @@ public class Ledger {
     @Column(name = "user_id", columnDefinition = "int comment '使用者id'")
     private Integer userId;
 
-    @Column(name = "create_time",columnDefinition = "timestamp comment '创建时间'")
+    @Column(name = "create_time", columnDefinition = "timestamp comment '创建时间'")
     private Timestamp createTime;
 
     @Column(name = "total_balance", columnDefinition = "decimal(11, 2) comment '总余额'")
+    @Setter
     private BigDecimal totalBalance;
 
     @Column(name = "total_income", columnDefinition = "decimal(11,2) comment '总收入'")
     @Setter
     private BigDecimal totalIncome;
 
-    @Column(name ="total_expense", columnDefinition = "decimal(11,2) comment '总支出'")
+    @Column(name = "total_expense", columnDefinition = "decimal(11,2) comment '总支出'")
     @Setter
     private BigDecimal totalExpense;
 
     @Column(name = "currency_id", columnDefinition = "int comment '货币id'")
     private Integer currencyId;
 
-    public static Ledger of(Currency currency, Integer userId){
-//        String ledgerName = StrUtil.format("我的{}账本", currency.getName());
-//        return new Ledger(null, ledgerName,userId,Timestamp.from(Instant.now()), BigDecimal.ZERO, BigDecimal.ZERO,
-//                currency.getId());
-        return null;
+    public static Ledger of(String ledgerName, Currency currency, Integer userId) {
+        return new Ledger(null, ledgerName, userId, Timestamp.from(Instant.now()), BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, currency.getId());
     }
 
 }

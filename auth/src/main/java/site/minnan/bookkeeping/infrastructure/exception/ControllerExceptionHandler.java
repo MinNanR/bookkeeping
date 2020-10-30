@@ -46,15 +46,16 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(EntityNotExistException.class)
     @ResponseBody
-    public ResponseEntity<?> handleEntityNotExistException(EntityNotExistException ex){
+    public ResponseEntity<?> handleEntityNotExistException(EntityNotExistException ex) {
         return ResponseEntity.fail(ex.getMessage());
     }
 
     @ExceptionHandler(EntityAlreadyExistException.class)
     @ResponseBody
-    public ResponseEntity<?> handleEntityAlreadyExistException(EntityAlreadyExistException ex){
+    public ResponseEntity<?> handleEntityAlreadyExistException(EntityAlreadyExistException ex) {
         return ResponseEntity.fail(ex.getMessage());
     }
+
 
     @ExceptionHandler(Exception.class)
     @ResponseBody

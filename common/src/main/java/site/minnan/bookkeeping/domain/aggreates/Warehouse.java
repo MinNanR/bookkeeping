@@ -1,6 +1,7 @@
 package site.minnan.bookkeeping.domain.aggreates;
 
 import lombok.*;
+import site.minnan.bookkeeping.infrastructure.enumeration.WarehouseType;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -42,12 +43,16 @@ public class Warehouse {
     @Column(name = "user_id", columnDefinition = "int comment '用户id'")
     private Integer userId;
 
+    @Column(name = "warehouse_type", columnDefinition = "varchar(20) comment '一级账户'")
+    @Enumerated(value = EnumType.STRING)
+    private WarehouseType warehouseType;
+
     @Column(name = "create_time", columnDefinition = "timestamp comment '创建时间'")
     private Timestamp createTime;
 
-    public static Warehouse of(String warehouseName, Optional<BigDecimal> balance, Integer userId) {
-//        return new Warehouse(null, warehouseName, balance.orElse(BigDecimal.ZERO), userId,
-//                Timestamp.from(Instant.now()));
-        return null;
+    public static Warehouse of(String warehouseName, Optional<BigDecimal> balance, WarehouseType type,
+                               Currency currency, Integer ledgerId, Integer userId) {
+        return new Warehouse(null, warehouseName, balance.orElse(BigDecimal.ZERO), BigDecimal.ZERO, BigDecimal.ZERO,
+                ledgerId, currency.getId(), userId, type, Timestamp.from(Instant.now()));
     }
 }
