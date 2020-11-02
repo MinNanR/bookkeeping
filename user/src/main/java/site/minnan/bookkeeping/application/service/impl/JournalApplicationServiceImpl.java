@@ -2,6 +2,7 @@ package site.minnan.bookkeeping.application.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.application.service.JournalApplicationService;
@@ -13,13 +14,15 @@ import site.minnan.bookkeeping.domain.repository.JournalRepository;
 import site.minnan.bookkeeping.domain.repository.JournalTypeRepository;
 import site.minnan.bookkeeping.domain.repository.LedgerRepository;
 import site.minnan.bookkeeping.domain.repository.WarehouseRepository;
+import site.minnan.bookkeeping.domain.service.WarehouseService;
 import site.minnan.bookkeeping.infrastructure.enumeration.JournalDirection;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
+import site.minnan.bookkeeping.userinterface.dto.UpdateJournalDTO;
 import site.minnan.bookkeeping.userinterface.dto.journal.AddJournalDTO;
 
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -37,6 +40,8 @@ public class JournalApplicationServiceImpl implements JournalApplicationService 
     @Autowired
     private JournalRepository journalRepository;
 
+    @Autowired
+    private WarehouseService warehouseService;
 
     /**
      * 添加记录
@@ -59,10 +64,46 @@ public class JournalApplicationServiceImpl implements JournalApplicationService 
         Timestamp journalTime = Optional.ofNullable(dto.getJournalTime()).orElseGet(() ->
                 Timestamp.valueOf(DateUtil.format(DateTime.now(), "yyyy-MM-dd HH:mm:00")));
         Journal journal = Journal.of(dto.getAmount(), warehouse, ledger, journalType, journalTime, dto.getRemark());
-        warehouse.settle(journal);
+        warehouse.settleJournal(journal);
         ledger.settle(journal);
         warehouseRepository.save(warehouse);
         ledgerRepository.save(ledger);
         journalRepository.save(journal);
+    }
+
+    /**
+     * 修改记录
+     *
+     * @param dto
+     */
+    @Override
+    public void modifyJournal(UpdateJournalDTO dto) throws JsonProcessingException {
+        Optional<Journal> journalOptional = journalRepository.findById(dto.getId());
+        Journal journal = journalOptional.orElseThrow(() -> new EntityNotExistException("记录不存在"));
+        Journal copy = journal.copy();
+        Optional<JournalType> journalType = Optional.ofNullable(dto.getJournalTypeId())
+                .map(id ->
+                        journalTypeRepository.findOne((root, query, criteriaBuilder) -> {
+                            Predicate conjunction = criteriaBuilder.conjunction();
+                            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("journalDirection"),
+                                    journal.getJournalDirection()));
+                            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("id"), id));
+                            return conjunction;
+                        }).orElseThrow(() -> new EntityNotExistException("类型不存在"))
+                );
+        Optional<Timestamp> journalTime = Optional.ofNullable(dto.getJournalTime());
+        Optional<String> remark = Optional.ofNullable(dto.getRemark());
+        copy.changeInformation(journalType, journalTime, remark);
+        if (dto.getAmount() != null) {
+            copy.changeAmount(dto.getAmount());
+            Ledger ledger = ledgerRepository.findById(copy.getLedgerId()).get();
+            ledger.correct(journal, copy);
+            ledgerRepository.save(ledger);
+        }
+        if (dto.getWarehouseId() != null) {
+            copy.changeWarehouse(dto.getWarehouseId());
+        }
+        warehouseService.correctJournal(journal, copy);
+        journalRepository.save(copy);
     }
 }

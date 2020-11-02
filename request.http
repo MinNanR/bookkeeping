@@ -103,9 +103,19 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
 
 {
-  "warehouseId":"1",
+  "warehouseId": "1",
   "ledgerId": 2,
   "amount": 3000,
   "journalTypeId": 5,
   "journalTime": "2020-11-02 15:40"
+}
+
+###
+POST http://localhost:8902/user/journal/modifyJournal
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "id": 1,
+  "amount": 4
 }

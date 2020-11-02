@@ -26,7 +26,7 @@ public enum JournalDirection implements DirectionStrategy {
         public BiConsumer<BigDecimal, BigDecimal> correct(Statistics statistics) {
             return (amount, newAmount) -> {
                 statistics.setBalance(statistics.getBalance().add(amount).subtract(newAmount));
-                statistics.setTotalExpense(statistics.getTotalExpense().subtract(amount).add(amount));
+                statistics.setTotalExpense(statistics.getTotalExpense().subtract(amount).add(newAmount));
             };
         }
 

@@ -8,7 +8,9 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "e_warehouse")
@@ -63,7 +65,15 @@ public class Warehouse implements Statistics {
      *
      * @param journal
      */
-    public void settle(Journal journal) {
+    public void settleJournal(Journal journal) {
         journal.getJournalDirection().calculate(this).accept(journal.getAmount());
+    }
+
+    public void removeJournal(Journal journal){
+        journal.getJournalDirection().calculate(this).accept(journal.getAmount().negate());
+    }
+
+    public void settleJournal(Journal source, Journal target){
+        source.getJournalDirection().correct(this).accept(source.getAmount(), target.getAmount());
     }
 }

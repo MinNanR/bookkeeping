@@ -78,4 +78,14 @@ public class Ledger implements Statistics {
         journal.getJournalDirection().calculate(this).accept(journal.getAmount());
     }
 
+    /**
+     * 根据流水记录修改账本
+     *
+     * @param source
+     * @param target
+     */
+    public void correct(Journal source, Journal target) {
+        source.getJournalDirection().correct(this).accept(source.getAmount(), target.getAmount());
+    }
+
 }

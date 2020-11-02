@@ -1,5 +1,7 @@
 package site.minnan.bookkeeping.domain.aggreates;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import site.minnan.bookkeeping.infrastructure.enumeration.JournalDirection;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 @Entity
 @Table(name = "e_journal")
@@ -49,13 +52,31 @@ public class Journal {
     @Column(name = "remark", columnDefinition = "varchar(200) comment '备注'")
     private String remark;
 
-    @Transient
-    private JournalType journalType;
-
     public static Journal of(BigDecimal amount, Warehouse warehouse, Ledger ledger, JournalType journalType,
                              Timestamp journalTime, String remark) {
         return new Journal(null, amount, warehouse.getId(), ledger.getId(), warehouse.getUserId(), journalType.getId(),
-                warehouse.getCurrencyId(), journalType.getJournalDirection(), journalTime, remark, null);
+                warehouse.getCurrencyId(), journalType.getJournalDirection(), journalTime, remark);
+    }
+
+    public Journal copy() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String s = objectMapper.writeValueAsString(this);
+        return objectMapper.readValue(s, Journal.class);
+    }
+
+    public void changeInformation(Optional<JournalType> journalType, Optional<Timestamp> journalTime,
+                                  Optional<String> remark){
+        journalType.ifPresent(type -> this.journalTypeId = type.getId());
+        journalTime.ifPresent(time -> this.journalTime = time);
+        remark.ifPresent(r -> this.remark = r);
+    }
+
+    public void changeWarehouse(Integer warehouseId){
+        this.warehouseId = warehouseId;
+    }
+
+    public void changeAmount(BigDecimal amount){
+        this.amount = amount;
     }
 }
 

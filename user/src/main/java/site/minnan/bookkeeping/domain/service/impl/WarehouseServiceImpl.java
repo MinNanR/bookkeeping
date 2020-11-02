@@ -1,14 +1,11 @@
 package site.minnan.bookkeeping.domain.service.impl;
 
-import jdk.nashorn.internal.runtime.options.Option;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.domain.aggreates.Currency;
 import site.minnan.bookkeeping.domain.aggreates.Journal;
 import site.minnan.bookkeeping.domain.aggreates.Warehouse;
 import site.minnan.bookkeeping.domain.repository.CurrencyRepository;
-import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.repository.WarehouseRepository;
 import site.minnan.bookkeeping.domain.service.LedgerService;
 import site.minnan.bookkeeping.domain.service.WarehouseService;
@@ -17,8 +14,8 @@ import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.userinterface.dto.config.AddWarehouseDTO;
 
 import javax.persistence.criteria.Predicate;
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -57,5 +54,33 @@ public class WarehouseServiceImpl implements WarehouseService {
         Warehouse newWarehouse = Warehouse.of(dto.getWarehouseName(), balance, dto.getType(),
                 currency, dto.getLedgerId(), dto.getUserId());
         warehouseRepository.save(newWarehouse);
+    }
+
+    /**
+     * 修正流水记录
+     *
+     * @param source
+     * @param target
+     */
+    @Override
+    public void correctJournal(Journal source, Journal target) {
+        Warehouse sourceWarehouse, targetWarehouse;
+        if (!source.getWarehouseId().equals(target.getWarehouseId())) {
+            //需要修改账户
+            sourceWarehouse = warehouseRepository.findById(source.getWarehouseId()).get();
+            targetWarehouse =
+                    warehouseRepository.findById(target.getWarehouseId()).orElseThrow(() -> new EntityNotExistException("账户不存在"));
+            sourceWarehouse.removeJournal(source);
+            targetWarehouse.settleJournal(source);
+        } else {
+            //不需要修改账户
+            sourceWarehouse = warehouseRepository.findById(source.getWarehouseId()).get();
+            targetWarehouse = sourceWarehouse;
+        }
+        //金额有变化时
+        if (!source.getAmount().equals(target.getAmount())) {
+            targetWarehouse.settleJournal(source, target);
+        }
+        warehouseRepository.saveAll(Arrays.asList(sourceWarehouse, targetWarehouse));
     }
 }
