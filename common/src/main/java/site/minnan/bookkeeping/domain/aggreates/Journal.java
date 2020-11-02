@@ -36,6 +36,9 @@ public class Journal {
     @Column(name = "journal_type_id", columnDefinition = "int comment '类型id'")
     private Integer journalTypeId;
 
+    @Column(name = "currency_id", columnDefinition = "int comment '货币id'")
+    private Integer currencyId;
+
     @Column(name = "journal_direction", columnDefinition = "varchar(20) comment '流水方向'")
     @Enumerated(EnumType.STRING)
     private JournalDirection journalDirection;
@@ -43,7 +46,7 @@ public class Journal {
     @Column(name = "journal_time", columnDefinition = "timestamp comment '记录产生时间'")
     private Timestamp journalTime;
 
-    @Column(name = "remark", columnDefinition = "timestamp comment '备注'")
+    @Column(name = "remark", columnDefinition = "varchar(200) comment '备注'")
     private String remark;
 
     @Transient
@@ -52,7 +55,7 @@ public class Journal {
     public static Journal of(BigDecimal amount, Warehouse warehouse, Ledger ledger, JournalType journalType,
                              Timestamp journalTime, String remark) {
         return new Journal(null, amount, warehouse.getId(), ledger.getId(), warehouse.getUserId(), journalType.getId(),
-                journalType.getJournalDirection(), journalTime, remark, null);
+                warehouse.getCurrencyId(), journalType.getJournalDirection(), journalTime, remark, null);
     }
 }
 

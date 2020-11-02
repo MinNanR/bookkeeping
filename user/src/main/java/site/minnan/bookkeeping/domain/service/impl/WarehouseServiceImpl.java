@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.domain.aggreates.Currency;
+import site.minnan.bookkeeping.domain.aggreates.Journal;
 import site.minnan.bookkeeping.domain.aggreates.Warehouse;
 import site.minnan.bookkeeping.domain.repository.CurrencyRepository;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
@@ -16,6 +17,7 @@ import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 import site.minnan.bookkeeping.userinterface.dto.config.AddWarehouseDTO;
 
 import javax.persistence.criteria.Predicate;
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Optional;
 

@@ -2,6 +2,7 @@ package site.minnan.bookkeeping.domain.aggreates;
 
 import lombok.*;
 import site.minnan.bookkeeping.infrastructure.enumeration.WarehouseType;
+import site.minnan.bookkeeping.infrastructure.interfaces.Statistics;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ import java.util.Optional;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Warehouse {
+public class Warehouse implements Statistics {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,7 @@ public class Warehouse {
     private String warehouseName;
 
     @Column(name = "balance", columnDefinition = "decimal(11, 2) comment '余额'")
+    @Setter
     private BigDecimal balance;
 
     @Column(name = "total_income", columnDefinition = "decimal(11, 2) comment '总收入'")
@@ -54,5 +56,14 @@ public class Warehouse {
                                Currency currency, Integer ledgerId, Integer userId) {
         return new Warehouse(null, warehouseName, balance.orElse(BigDecimal.ZERO), BigDecimal.ZERO, BigDecimal.ZERO,
                 ledgerId, currency.getId(), userId, type, Timestamp.from(Instant.now()));
+    }
+
+    /**
+     * 根据流水记录结算账户
+     *
+     * @param journal
+     */
+    public void settle(Journal journal) {
+        journal.getJournalDirection().calculate(this).accept(journal.getAmount());
     }
 }

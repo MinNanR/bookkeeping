@@ -11,7 +11,7 @@ POST http://localhost:8900/auth/register
 Content-Type: application/json
 
 {
-  "username":"15220378779",
+  "username": "15220378779",
   "verificationCode": "927161",
   "password": "minnan35"
 }
@@ -21,7 +21,7 @@ POST http://localhost:8900/auth/login/password
 Content-Type: application/json
 
 {
-  "username":"15220378779",
+  "username": "15220378779",
   "password": "minnan35"
 }
 
@@ -38,7 +38,7 @@ POST http://localhost:8900/auth/login/verificationCode
 Content-Type: application/json
 
 {
-  "username":"15220378779",
+  "username": "15220378779",
   "verificationCode": "663299"
 }
 
@@ -64,3 +64,48 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6M
   "balance": 100
 }
 
+###
+POST http://localhost:8902/user/CustomConfig/createExpenseType
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "typeName": "可乐",
+  "parentId": 1
+}
+
+###
+POST http://localhost:8902/user/CustomConfig/createIncomeType
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "typeName": "工资收入",
+  "parentId": 4
+}
+
+###
+POST http://localhost:8902/user/journal/addExpense
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "warehouseId": 1,
+  "ledgerId": 2,
+  "amount": "2",
+  "journalTypeId": 2,
+  "remark": "早餐"
+}
+
+###
+POST http://localhost:8902/user/journal/addIncome
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "warehouseId":"1",
+  "ledgerId": 2,
+  "amount": 3000,
+  "journalTypeId": 5,
+  "journalTime": "2020-11-02 15:40"
+}

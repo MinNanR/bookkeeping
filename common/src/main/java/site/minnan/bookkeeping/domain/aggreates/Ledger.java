@@ -2,6 +2,7 @@ package site.minnan.bookkeeping.domain.aggreates;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.*;
+import site.minnan.bookkeeping.infrastructure.interfaces.Statistics;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ import java.time.Instant;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Ledger {
+public class Ledger implements Statistics {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,9 +44,38 @@ public class Ledger {
     @Column(name = "currency_id", columnDefinition = "int comment '货币id'")
     private Integer currencyId;
 
+    /**
+     * 统计项目余额
+     *
+     * @return
+     */
+    @Override
+    public BigDecimal getBalance() {
+        return totalBalance;
+    }
+
+    /**
+     * 注入统计后的余额
+     *
+     * @param balance
+     */
+    @Override
+    public void setBalance(BigDecimal balance) {
+        this.totalBalance = balance;
+    }
+
     public static Ledger of(String ledgerName, Currency currency, Integer userId) {
         return new Ledger(null, ledgerName, userId, Timestamp.from(Instant.now()), BigDecimal.ZERO, BigDecimal.ZERO,
                 BigDecimal.ZERO, currency.getId());
+    }
+
+    /**
+     * 根据流水记录结算账本
+     *
+     * @param journal
+     */
+    public void settle(Journal journal) {
+        journal.getJournalDirection().calculate(this).accept(journal.getAmount());
     }
 
 }

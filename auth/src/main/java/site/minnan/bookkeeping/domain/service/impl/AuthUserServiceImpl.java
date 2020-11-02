@@ -5,8 +5,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.domain.aggreates.AuthUser;
-import site.minnan.bookkeeping.domain.repository.AuthUserRepository;
 import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
+import site.minnan.bookkeeping.domain.repository.UserRepository;
 import site.minnan.bookkeeping.domain.service.AuthUserService;
 import site.minnan.bookkeeping.infrastructure.enumeration.Role;
 import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistException;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public class AuthUserServiceImpl implements AuthUserService {
 
     @Autowired
-    private AuthUserRepository authUserRepository;
+    private UserRepository authUserRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

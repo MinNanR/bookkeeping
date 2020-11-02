@@ -3,6 +3,7 @@ package site.minnan.bookkeeping.infrastructure.enumeration;
 import site.minnan.bookkeeping.domain.aggreates.JournalType;
 import site.minnan.bookkeeping.domain.aggreates.Ledger;
 import site.minnan.bookkeeping.domain.aggreates.Warehouse;
+import site.minnan.bookkeeping.infrastructure.interfaces.Statistics;
 
 import java.math.BigDecimal;
 import java.util.function.BiConsumer;
@@ -14,45 +15,38 @@ public enum JournalDirection implements DirectionStrategy {
 
     EXPENSE("支出") {
         @Override
-        public Function<BigDecimal, BigDecimal> calculate(Warehouse warehouse) {
-            return amount -> warehouse.getBalance().subtract(amount);
+        public Consumer<BigDecimal> calculate(Statistics statistics) {
+            return amount -> {
+                statistics.setBalance(statistics.getBalance().subtract(amount));
+                statistics.setTotalExpense(statistics.getTotalExpense().add(amount));
+            };
         }
 
         @Override
-        public Consumer<BigDecimal> calculate(Ledger ledger) {
-            return amount -> ledger.setTotalExpense(ledger.getTotalExpense().add(amount));
+        public BiConsumer<BigDecimal, BigDecimal> correct(Statistics statistics) {
+            return (amount, newAmount) -> {
+                statistics.setBalance(statistics.getBalance().add(amount).subtract(newAmount));
+                statistics.setTotalExpense(statistics.getTotalExpense().subtract(amount).add(amount));
+            };
         }
 
-        @Override
-        public BiFunction<BigDecimal, BigDecimal, BigDecimal> correct(Warehouse warehouse) {
-            return (amount, newAmount) -> warehouse.getBalance().add(amount).subtract(newAmount);
-        }
-
-        @Override
-        public BiConsumer<BigDecimal, BigDecimal> correct(Ledger ledger) {
-            return (amount, newAmount) -> ledger.setTotalExpense(ledger.getTotalExpense().subtract(amount).add(newAmount));
-        }
     },
 
     INCOME("收入") {
         @Override
-        public Function<BigDecimal, BigDecimal> calculate(Warehouse warehouse) {
-            return amount -> warehouse.getBalance().add(amount);
+        public Consumer<BigDecimal> calculate(Statistics statistics) {
+            return amount -> {
+                statistics.setBalance(statistics.getBalance().add(amount));
+                statistics.setTotalIncome(statistics.getTotalIncome().add(amount));
+            };
         }
 
         @Override
-        public Consumer<BigDecimal> calculate(Ledger ledger) {
-            return amount -> ledger.setTotalIncome(ledger.getTotalIncome().add(amount));
-        }
-
-        @Override
-        public BiFunction<BigDecimal, BigDecimal, BigDecimal> correct(Warehouse warehouse) {
-            return (amount, newAmount) -> warehouse.getBalance().subtract(amount).add(newAmount);
-        }
-
-        @Override
-        public BiConsumer<BigDecimal, BigDecimal> correct(Ledger ledger) {
-            return (amount, newAmount) -> ledger.setTotalIncome(ledger.getTotalIncome().subtract(amount).add(newAmount));
+        public BiConsumer<BigDecimal, BigDecimal> correct(Statistics statistics) {
+            return (amount, newAmount) -> {
+                statistics.setBalance(statistics.getBalance().subtract(amount).add(newAmount));
+                statistics.setTotalIncome(statistics.getTotalIncome().subtract(amount).add(newAmount));
+            };
         }
     };
 

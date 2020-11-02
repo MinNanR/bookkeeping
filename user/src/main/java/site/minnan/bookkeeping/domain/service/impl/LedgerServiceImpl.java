@@ -10,7 +10,6 @@ import site.minnan.bookkeeping.domain.repository.SpecificationGenerator;
 import site.minnan.bookkeeping.domain.service.LedgerService;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 
-import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.util.Optional;
 
