@@ -4,6 +4,9 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import site.minnan.bookkeeping.application.service.JournalApplicationService;
 import site.minnan.bookkeeping.domain.aggreates.Journal;
@@ -14,15 +17,22 @@ import site.minnan.bookkeeping.domain.repository.JournalRepository;
 import site.minnan.bookkeeping.domain.repository.JournalTypeRepository;
 import site.minnan.bookkeeping.domain.repository.LedgerRepository;
 import site.minnan.bookkeeping.domain.repository.WarehouseRepository;
+import site.minnan.bookkeeping.domain.service.JournalService;
 import site.minnan.bookkeeping.domain.service.WarehouseService;
+import site.minnan.bookkeeping.domain.vo.JournalListItemVO;
+import site.minnan.bookkeeping.domain.vo.QueryVO;
 import site.minnan.bookkeeping.infrastructure.enumeration.JournalDirection;
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
-import site.minnan.bookkeeping.userinterface.dto.UpdateJournalDTO;
+import site.minnan.bookkeeping.userinterface.dto.journal.DeleteJournalDTO;
+import site.minnan.bookkeeping.userinterface.dto.journal.QueryJournalDTO;
+import site.minnan.bookkeeping.userinterface.dto.journal.UpdateJournalDTO;
 import site.minnan.bookkeeping.userinterface.dto.journal.AddJournalDTO;
 
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,6 +52,9 @@ public class JournalApplicationServiceImpl implements JournalApplicationService 
 
     @Autowired
     private WarehouseService warehouseService;
+
+    @Autowired
+    private JournalService journalService;
 
     /**
      * 添加记录
@@ -105,5 +118,49 @@ public class JournalApplicationServiceImpl implements JournalApplicationService 
         }
         warehouseService.correctJournal(journal, copy);
         journalRepository.save(copy);
+    }
+
+    /**
+     * 删除记录
+     *
+     * @param dto
+     */
+    @Override
+    @Transactional
+    public void deleteJournal(DeleteJournalDTO dto) throws JsonProcessingException {
+        Optional<Journal> journalOptional = journalRepository.findById(dto.getId());
+        Journal journal = journalOptional.orElseThrow(() -> new EntityNotExistException("记录不存在"));
+        Journal copy = journal.copy();
+        copy.changeAmount(BigDecimal.ZERO);
+        Ledger ledger = ledgerRepository.findById(journal.getLedgerId()).get();
+        ledger.correct(journal, copy);
+        ledgerRepository.save(ledger);
+        warehouseService.correctJournal(journal, copy);
+        journalRepository.delete(journal);
+    }
+
+    /**
+     * 查询记录
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public QueryVO<JournalListItemVO> getJournalList(QueryJournalDTO dto) {
+        Integer ledgerId = dto.getLedgerId();
+        Optional<Integer> warehouseId = Optional.ofNullable(dto.getWarehouseId());
+        Optional<JournalDirection> direction = Optional.ofNullable(dto.getDirection());
+        Integer pageIndex = dto.getPageIndex();
+        Integer pageSize = dto.getPageSize();
+        Page<Journal> journalPage = journalRepository.findAll((root, query, criteriaBuilder) -> {
+            Predicate conjunction = criteriaBuilder.conjunction();
+            conjunction.getExpressions().add(criteriaBuilder.equal(root.get("ledgerId"), ledgerId));
+            warehouseId.ifPresent(id -> conjunction.getExpressions().add(criteriaBuilder.equal(root.get("warehouseId"), id)));
+            direction.ifPresent(d -> conjunction.getExpressions().add(criteriaBuilder.equal(root.get(
+                    "journalDirection"), d)));
+            return conjunction;
+        }, PageRequest.of(pageIndex - 1, pageSize, Sort.by(Sort.Direction.DESC, "journalTime")));
+        List<JournalListItemVO> voList = journalService.assembleJournal(journalPage.getContent());
+        return new QueryVO<>(voList, journalPage.getTotalElements());
     }
 }

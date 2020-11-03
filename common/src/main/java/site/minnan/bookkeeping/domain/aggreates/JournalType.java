@@ -50,4 +50,9 @@ public class JournalType {
         return new JournalType(null ,typeName, Timestamp.from(Instant.now()), userId, parentId, 2, journalDirection);
     }
 
+    public JournalType(Integer id, String name){
+        this.id = id;
+        this.typeName = name;
+    }
+
 }

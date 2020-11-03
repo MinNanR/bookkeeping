@@ -32,7 +32,7 @@ public class ResponseEntity<T> {
         return responseEntity;
     }
 
-    public static<T> ResponseEntity<T> success(String message){
+    public static<T> ResponseEntity<T> message(String message){
         ResponseEntity<T> responseEntity = new ResponseEntity<>(ResponseCode.SUCCESS);
         responseEntity.message = message;
         return responseEntity;

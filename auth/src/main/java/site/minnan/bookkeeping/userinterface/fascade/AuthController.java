@@ -64,7 +64,7 @@ public class AuthController {
     public ResponseEntity<?> getRegisterVerificationCode(@RequestBody @Valid VerificationCodeDTO dto) {
         try {
             userService.getRegisterVerificationCode(dto);
-            return ResponseEntity.success("短息发送成功，有效期五分钟");
+            return ResponseEntity.message("短息发送成功，有效期五分钟");
         } catch (ClientException | JsonProcessingException e) {
             return ResponseEntity.fail("短信发送失败");
         }
@@ -74,7 +74,7 @@ public class AuthController {
     public ResponseEntity<?> getLoginVerificationCode(@RequestBody @Valid VerificationCodeDTO dto) {
         try {
             userService.getLoginVerificationCode(dto);
-            return ResponseEntity.success("短息发送成功，有效期五分钟");
+            return ResponseEntity.message("短息发送成功，有效期五分钟");
         } catch (ClientException | JsonProcessingException e) {
             return ResponseEntity.fail("短信发送失败");
         }

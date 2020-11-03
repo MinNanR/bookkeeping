@@ -60,6 +60,11 @@ public class Warehouse implements Statistics {
                 ledgerId, currency.getId(), userId, type, Timestamp.from(Instant.now()));
     }
 
+    public Warehouse(Integer id, String name){
+        this.id = id;
+        this.warehouseName = name;
+    }
+
     /**
      * 根据流水记录结算账户
      *
@@ -69,11 +74,22 @@ public class Warehouse implements Statistics {
         journal.getJournalDirection().calculate(this).accept(journal.getAmount());
     }
 
-    public void removeJournal(Journal journal){
+    /**
+     * 删除流水记录
+     *
+     * @param journal
+     */
+    public void removeJournal(Journal journal) {
         journal.getJournalDirection().calculate(this).accept(journal.getAmount().negate());
     }
 
-    public void settleJournal(Journal source, Journal target){
+    /**
+     * 根据流水修正余额与总支出总收入
+     *
+     * @param source
+     * @param target
+     */
+    public void settleJournal(Journal source, Journal target) {
         source.getJournalDirection().correct(this).accept(source.getAmount(), target.getAmount());
     }
 }

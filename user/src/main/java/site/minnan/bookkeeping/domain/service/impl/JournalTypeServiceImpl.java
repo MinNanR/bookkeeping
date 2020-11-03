@@ -10,6 +10,9 @@ import site.minnan.bookkeeping.infrastructure.exception.EntityAlreadyExistExcept
 import site.minnan.bookkeeping.infrastructure.exception.EntityNotExistException;
 
 import javax.persistence.criteria.Predicate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -65,5 +68,17 @@ public class JournalTypeServiceImpl implements JournalTypeService {
             journalType = JournalType.firstLevel(typeName, direction, userId);
         }
         repository.save(journalType);
+    }
+
+    /**
+     * 根据id查找名称集合
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public Map<Integer, String> mapIdToName(Iterable<Integer> ids) {
+        return repository.findAllNameById(ids).stream()
+                .collect(HashMap::new, (hashMap, type) -> hashMap.put(type.getId(), type.getTypeName()), HashMap::putAll);
     }
 }

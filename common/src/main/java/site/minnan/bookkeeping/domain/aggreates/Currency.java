@@ -41,6 +41,11 @@ public class Currency {
         return new Currency(null ,code, name, updateUserId, Timestamp.from(Instant.now()), null);
     }
 
+    public Currency(Integer id, String name){
+        this.id = id;
+        this.name = name;
+    }
+
     public void changeName(String name, Integer updateUserId){
         this.name  = name;
         this.updateUserId = updateUserId;

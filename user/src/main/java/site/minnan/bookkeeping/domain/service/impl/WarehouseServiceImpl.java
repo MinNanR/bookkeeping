@@ -16,6 +16,8 @@ import site.minnan.bookkeeping.userinterface.dto.config.AddWarehouseDTO;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -82,5 +84,31 @@ public class WarehouseServiceImpl implements WarehouseService {
             targetWarehouse.settleJournal(source, target);
         }
         warehouseRepository.saveAll(Arrays.asList(sourceWarehouse, targetWarehouse));
+    }
+
+    /**
+     * 将id映射成对应的名字
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public Map<Integer, String> mapIdToWarehouseName(Iterable<Integer> ids) {
+        return warehouseRepository.findAllNameById(ids).stream()
+                .collect(HashMap::new, (map, warehouse) -> map.put(warehouse.getId(), warehouse.getWarehouseName()),
+                        HashMap::putAll);
+    }
+
+    /**
+     * 将货币id映射为货币名称
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public Map<Integer, String> mapIdToCurrencyName(Iterable<Integer> ids) {
+        return currencyRepository.findAllNameById(ids).stream()
+                .collect(HashMap::new, (map, currency) -> map.put(currency.getId(),currency.getName()),
+                        HashMap::putAll);
     }
 }

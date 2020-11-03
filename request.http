@@ -57,11 +57,11 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
 
 {
-  "warehouseName": "微信钱包",
-  "type": "WECHAT",
+  "warehouseName": "余额宝",
+  "type": "ALI_PAY",
   "ledgerId": 2,
   "currencyId": "1",
-  "balance": 100
+  "balance": 0
 }
 
 ###
@@ -116,6 +116,27 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
 
 {
-  "id": 1,
-  "amount": 4
+  "id": 2,
+  "amount": 4000,
+  "warehouseId": 2
+}
+
+###
+POST http://localhost:8902/user/journal/deleteJournal
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "id": 3
+}
+
+###
+POST http://localhost:8902/user/journal/getJournalLit
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNTIyMDM3ODc3OSIsImV4cCI6MTYwNDYzMTU4NiwiaWF0IjoxNjA0MDI2Nzg2fQ.nWI3oxKdBDpzN-GcRA_Md10Hat1ttOc0OCjlS_IzZ2QCumjzWMoZiTn-QWlfFLKG_pQ4V1nGoKgp67Mh-Ob7-w
+
+{
+  "ledgerId": 2,
+  "pageIndex": 1,
+  "pageSize": 10
 }
